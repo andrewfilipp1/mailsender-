@@ -10,7 +10,7 @@ from datetime import datetime
 # Add the current directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from app import app, db, User, NewsItem, Media, NewsletterSubscriber, Moment
+from app import app, db, User, News, Article, NewsletterSubscriber, Moment, ContactMessage
 from werkzeug.security import generate_password_hash
 
 def create_database():
@@ -32,8 +32,7 @@ def create_database():
             username='vlasia_admin',
             email='admin@vlasia.gr',
             password_hash=generate_password_hash('admin123'),
-            is_admin=True,
-            created_at=datetime.utcnow()
+            is_admin=True
         )
         
         db.session.add(admin_user)
