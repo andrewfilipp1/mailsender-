@@ -15,6 +15,7 @@ import uuid
 from PIL import Image
 from config import config
 from dotenv import load_dotenv
+from flask_mail import Mail, Message
 
 # Load environment variables first
 load_dotenv()
@@ -31,6 +32,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 admin = Admin(app, name='Vlasia Blog Admin', template_mode='bootstrap3')
+mail = Mail(app)
 
 # Models
 class User(UserMixin, db.Model):
@@ -241,7 +243,16 @@ def contact():
         db.session.add(contact_msg)
         db.session.commit()
         
-        flash('Το μήνυμά σας στάλθηκε επιτυχώς! Θα σας απαντήσουμε σύντομα.', 'success')
+        # Try to send email notification
+        try:
+            if send_contact_email(first_name, last_name, email, subject, message):
+                flash('Το μήνυμά σας στάλθηκε επιτυχώς! Θα σας απαντήσουμε σύντομα.', 'success')
+            else:
+                flash('Το μήνυμά σας αποθηκεύθηκε αλλά η αποστολή email απέτυχε. Θα σας απαντήσουμε σύντομα.', 'warning')
+        except Exception as e:
+            print(f"Error sending contact email: {e}")
+            flash('Το μήνυμά σας αποθηκεύθηκε αλλά η αποστολή email απέτυχε. Θα σας απαντήσουμε σύντομα.', 'warning')
+        
         return redirect(url_for('contact'))
     
     return render_template('contact.html')
@@ -364,27 +375,18 @@ def subscribe_newsletter():
     return redirect(url_for('index'))
 
 def send_contact_email(first_name, last_name, email, subject, message):
-    """Send contact form email via Mailgun API"""
+    """Send contact form email via Flask-Mail"""
     try:
-        import requests
-        import os
-        
-        # Load Mailgun credentials from environment variables
-        mailgun_api_key = os.environ.get('MAILGUN_API_KEY')
-        mailgun_domain = os.environ.get('MAILGUN_DOMAIN')
-        mailgun_sender = os.environ.get('MAILGUN_SENDER_EMAIL')
-        
-        if not all([mailgun_api_key, mailgun_domain, mailgun_sender]):
-            print("Mailgun credentials not found in environment variables")
+        # Check if mail is configured
+        if not app.config.get('MAIL_PASSWORD') or not app.config.get('MAIL_USERNAME'):
+            print("Mail configuration not found")
             return False
             
-        url = f"https://api.mailgun.net/v3/{mailgun_domain}/messages"
-        auth = ("api", mailgun_api_key)
-        data = {
-            "from": f"Vlasia Blog <{mailgun_sender}>",
-            "to": "admin@vlasia.gr",
-            "subject": f"Νέο μήνυμα επικοινωνίας: {subject}",
-            "text": f"""
+        msg = Message(
+            subject=f"Νέο μήνυμα επικοινωνίας: {subject}",
+            sender=app.config['MAIL_DEFAULT_SENDER'],
+            recipients=['admin@vlasia.gr'],
+            body=f"""
             Νέα επικοινωνία από το site:
             
             Όνομα: {first_name} {last_name}
@@ -394,38 +396,29 @@ def send_contact_email(first_name, last_name, email, subject, message):
             Μήνυμα:
             {message}
             """
-        }
-        response = requests.post(url, auth=auth, data=data)
-        if response.status_code != 200:
-            print(f"Mailgun API error: {response.text}")
-            return False
+        )
+        
+        mail.send(msg)
+        print(f"Contact email sent successfully to admin@vlasia.gr")
         return True
+        
     except Exception as e:
-        print(f"Mailgun API error: {e}")
+        print(f"Flask-Mail error: {e}")
         return False
 
 def send_welcome_email(email):
-    """Send welcome email via Mailgun API"""
+    """Send welcome email via Flask-Mail"""
     try:
-        import requests
-        import os
-        
-        # Load Mailgun credentials from environment variables
-        mailgun_api_key = os.environ.get('MAILGUN_API_KEY')
-        mailgun_domain = os.environ.get('MAILGUN_DOMAIN')
-        mailgun_sender = os.environ.get('MAILGUN_SENDER_EMAIL')
-        
-        if not all([mailgun_api_key, mailgun_domain, mailgun_sender]):
-            print("Mailgun credentials not found in environment variables")
+        # Check if mail is configured
+        if not app.config.get('MAIL_PASSWORD') or not app.config.get('MAIL_USERNAME'):
+            print("Mail configuration not found")
             return False
             
-        url = f"https://api.mailgun.net/v3/{mailgun_domain}/messages"
-        auth = ("api", mailgun_api_key)
-        data = {
-            "from": f"Vlasia Blog <{mailgun_sender}>",
-            "to": email,
-            "subject": "Καλώς ήρθατε στο Newsletter της Βλασίας!",
-            "text": """
+        msg = Message(
+            subject="Καλώς ήρθατε στο Newsletter της Βλασίας!",
+            sender=app.config['MAIL_DEFAULT_SENDER'],
+            recipients=[email],
+            body="""
             Καλώς ήρθατε στο newsletter της Βλασίας!
             
             Θα λαμβάνετε ενημερώσεις για τα τελευταία νέα και άρθρα του χωριού.
@@ -433,14 +426,14 @@ def send_welcome_email(email):
             Με εκτίμηση,
             Η ομάδα της Βλασίας
             """
-        }
-        response = requests.post(url, auth=auth, data=data)
-        if response.status_code != 200:
-            print(f"Mailgun API error: {response.text}")
-            return False
+        )
+        
+        mail.send(msg)
+        print(f"Welcome email sent successfully to {email}")
         return True
+        
     except Exception as e:
-        print(f"Mailgun API error: {e}")
+        print(f"Flask-Mail error: {e}")
         return False
 
 # Error handlers
@@ -456,4 +449,4 @@ def internal_error(error):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
