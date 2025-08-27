@@ -235,6 +235,123 @@ def mark_contact_notification_sent(contact_id):
         logging.error(f"❌ Error marking contact notification as sent: {e}")
         return False
 
+def process_announcements():
+    """Process announcements (only unsent ones)"""
+    try:
+        # Get announcements that haven't been sent to newsletter yet
+        response = requests.get(f"{SERVER_URL}/api/pending_announcements")
+        if response.status_code != 200:
+            logging.error(f"HTTP error getting announcements: {response.status_code}")
+            return 0
+        
+        data = response.json()
+        if not data.get('success'):
+            logging.error(f"API error getting announcements: {data.get('error')}")
+            return 0
+        
+        announcements = data.get('announcements', [])
+        announcement_count = 0
+        
+        for announcement in announcements:
+            logging.info(f"📢 Sending announcement: {announcement['title']}")
+            if send_announcement_to_newsletter(announcement):
+                # Mark as sent
+                mark_announcement_sent(announcement['id'])
+                announcement_count += 1
+            time.sleep(1)  # Small delay between emails
+        
+        return announcement_count
+        
+    except Exception as e:
+        logging.error(f"Error processing announcements: {e}")
+        return 0
+
+def send_announcement_to_newsletter(announcement):
+    """Send announcement to all newsletter subscribers"""
+    try:
+        # Get all active subscribers
+        response = requests.get(f"{SERVER_URL}/api/pending_newsletters")
+        if response.status_code != 200:
+            logging.error(f"HTTP error getting subscribers: {response.status_code}")
+            return False
+        
+        data = response.json()
+        if not data.get('success'):
+            logging.error(f"API error getting subscribers: {data.get('error')}")
+            return False
+        
+        # Get all active subscribers (not just pending ones)
+        response = requests.get(f"{SERVER_URL}/api/all_newsletters")
+        if response.status_code != 200:
+            logging.error(f"HTTP error getting all subscribers: {response.status_code}")
+            return False
+        
+        data = response.json()
+        if not data.get('success'):
+            logging.error(f"API error getting all subscribers: {data.get('error')}")
+            return False
+        
+        subscribers = data.get('subscribers', [])
+        
+        if not subscribers:
+            logging.warning("No newsletter subscribers found")
+            return True
+        
+        for subscriber in subscribers:
+            # Send announcement email
+            subject = f"Ανακοίνωση: {announcement['title']}"
+            
+            body = f"""
+🌟 Νέα Ανακοίνωση από τη Βλασία! 🌟
+
+{announcement['title']}
+
+{announcement['content']}
+
+---
+Κατηγορία: {announcement['category']}
+Προτεραιότητα: {announcement['priority']}
+Ημερομηνία: {announcement['created_at'][:10]}
+
+Με εκτίμηση και φιλία,
+Η ομάδα της Βλασίας
+🌿 vlasia.gr 🌿
+"""
+            
+            # Send email using Gmail SMTP
+            if send_email(subscriber['email'], subject, body):
+                logging.info(f"✅ Announcement sent to {subscriber['email']}")
+            else:
+                logging.error(f"❌ Failed to send announcement to {subscriber['email']}")
+            
+            time.sleep(1)  # Small delay between emails
+        
+        logging.info(f"✅ Announcement '{announcement['title']}' sent to {len(subscribers)} subscribers")
+        return True
+        
+    except Exception as e:
+        logging.error(f"❌ Error sending announcement to newsletter: {e}")
+        return False
+
+def mark_announcement_sent(announcement_id):
+    """Mark announcement as sent (update server)"""
+    try:
+        response = requests.post(f"{SERVER_URL}/api/mark_announcement_sent/{announcement_id}")
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('success'):
+                logging.info(f"✅ Announcement {announcement_id} marked as sent on server")
+                return True
+            else:
+                logging.error(f"❌ Server error: {data.get('error')}")
+                return False
+        else:
+            logging.error(f"❌ HTTP error: {response.status_code}")
+            return False
+    except Exception as e:
+        logging.error(f"❌ Error marking announcement as sent: {e}")
+        return False
+
 def main():
     """Main function to process pending emails"""
     logging.info("🚀 Starting Automated Email Sender for Vlasia Blog...")
@@ -258,12 +375,17 @@ def main():
     logging.info("📝 Processing contact notifications...")
     contact_count = process_contact_notifications()
     
+    # Process announcements (only once)
+    logging.info("📢 Processing announcements...")
+    announcement_count = process_announcements()
+    
     logging.info("✅ Email processing completed!")
     logging.info(f"📊 Processed {contact_count} contact notifications")
     logging.info(f"📊 Processed {subscriber_count} newsletter subscribers")
+    logging.info(f"📊 Processed {announcement_count} announcements")
     
     # Return exit code for cron job
-    if contact_count > 0 or subscriber_count > 0:
+    if contact_count > 0 or subscriber_count > 0 or announcement_count > 0:
         return 0  # Success
     else:
         return 1  # No emails to process

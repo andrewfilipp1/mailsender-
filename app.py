@@ -220,9 +220,9 @@ class AnnouncementAdmin(ModelView):
     }
     
     def on_model_change(self, form, model, is_created):
-        if is_created and model.is_published:
-            # Send to newsletter subscribers when new announcement is created
-            send_announcement_to_newsletter(model)
+        # Don't send automatically - let the local script handle it
+        # The local script will check for unsent announcements and send them
+        pass
 
 # Admin Actions
 class AdminActions(ModelView):
@@ -670,6 +670,26 @@ def api_pending_newsletters():
     except Exception as e:
         return {'success': False, 'error': str(e)}, 500
 
+@app.route('/api/all_newsletters')
+def api_all_newsletters():
+    """Get all active newsletter subscribers (for announcements)"""
+    try:
+        # Get all active newsletter subscribers
+        subscribers = NewsletterSubscriber.query.filter_by(is_active=True).order_by(NewsletterSubscriber.subscribed_at.desc()).all()
+        
+        result = []
+        for subscriber in subscribers:
+            result.append({
+                'id': subscriber.id,
+                'email': subscriber.email,
+                'subscribed_at': subscriber.subscribed_at.isoformat() if subscriber.subscribed_at else None,
+                'welcome_email_sent': subscriber.welcome_email_sent
+            })
+        
+        return {'success': True, 'subscribers': result}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
 @app.route('/api/mark_contact_sent/<int:contact_id>', methods=['POST'])
 def api_mark_contact_sent(contact_id):
     """Mark contact message as processed"""
@@ -699,6 +719,43 @@ def api_mark_contact_notification_sent(contact_id):
         contact.notification_sent = True
         db.session.commit()
         return {'success': True, 'message': f'Contact {contact_id} notification marked as sent'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
+@app.route('/api/pending_announcements')
+def api_pending_announcements():
+    """Get pending announcements for email sending (only unsent ones)"""
+    try:
+        # Get announcements that haven't been sent to newsletter yet
+        announcements = Announcement.query.filter_by(
+            is_published=True, 
+            sent_to_newsletter=False
+        ).order_by(Announcement.created_at.desc()).all()
+        
+        result = []
+        for announcement in announcements:
+            result.append({
+                'id': announcement.id,
+                'title': announcement.title,
+                'content': announcement.content,
+                'category': announcement.category,
+                'priority': announcement.priority,
+                'created_at': announcement.created_at.isoformat() if announcement.created_at else None,
+                'sent_to_newsletter': announcement.sent_to_newsletter
+            })
+        
+        return {'success': True, 'announcements': result}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
+@app.route('/api/mark_announcement_sent/<int:announcement_id>', methods=['POST'])
+def api_mark_announcement_sent(announcement_id):
+    """Mark announcement as sent to newsletter"""
+    try:
+        announcement = Announcement.query.get_or_404(announcement_id)
+        announcement.sent_to_newsletter = True
+        db.session.commit()
+        return {'success': True, 'message': f'Announcement {announcement_id} marked as sent'}
     except Exception as e:
         return {'success': False, 'error': str(e)}, 500
 
