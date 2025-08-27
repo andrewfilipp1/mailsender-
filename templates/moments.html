@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Στιγμές - Βλασία{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center py-5" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ url_for('static', filename='uploads/vlasia_waterfal.jpg') }}') center/cover;">
+    <div class="container">
+        <h1 class="display-4 text-white mb-4">Στιγμές από τη Βλασία</h1>
+        <p class="lead text-white">Φωτογραφίες και βίντεο που αφηγούνται την ιστορία του χωριού μας</p>
+    </div>
+</div>
+
+<!-- Filter and Sort Controls -->
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <select id="categoryFilter" class="form-control">
+                <option value="">Όλες οι κατηγορίες</option>
+                <option value="landscape">Τοπία</option>
+                <option value="village">Χωριό</option>
+                <option value="people">Ανθρώποι</option>
+                <option value="events">Εκδηλώσεις</option>
+                <option value="nature">Φύση</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <select id="sortOrder" class="form-control">
+                <option value="newest">Νεότερα πρώτα</option>
+                <option value="oldest">Παλαιότερα πρώτα</option>
+                <option value="title">Τίτλος Α-Ω</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Moments Grid -->
+<div class="container">
+    <div class="row" id="momentsGrid">
+        {% for moment in moments %}
+        <div class="col-lg-6 col-xl-4 mb-4 moment-item" data-category="{{ moment.category }}">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body p-0">
+                    {% if moment.is_image %}
+                    <!-- Image Display -->
+                    <div class="moment-image-container">
+                        <img src="{{ url_for('static', filename='uploads/' + moment.media_file) }}" 
+                             alt="{{ moment.title }}"
+                             class="img-fluid moment-image"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#imageModal{{ moment.id }}">
+                    </div>
+                    {% elif moment.is_video %}
+                    <!-- Video Display -->
+                    <div class="moment-video-container">
+                        <video controls class="img-fluid moment-video">
+                            <source src="{{ url_for('static', filename='uploads/' + moment.media_file) }}" type="video/mp4">
+                            Το browser σας δεν υποστηρίζει video.
+                        </video>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ moment.title }}</h5>
+                        <p class="card-text">{{ moment.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">{{ moment.category_display }}</span>
+                            <small class="text-muted">{{ moment.created_at.strftime('%d/%m/%Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Modal for each moment -->
+        {% if moment.is_image %}
+        <div class="modal fade" id="imageModal{{ moment.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ moment.title }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="{{ url_for('static', filename='uploads/' + moment.media_file) }}" 
+                             alt="{{ moment.title }}"
+                             class="img-fluid modal-image">
+                        <p class="mt-3">{{ moment.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- No Moments Message -->
+<div class="container text-center py-5" id="noMoments" style="display: none;">
+    <h3>Δεν βρέθηκαν στιγμές</h3>
+    <p>Δοκιμάστε να αλλάξετε τα φίλτρα σας.</p>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-section {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    background-attachment: fixed;
+}
+
+.moment-image-container,
+.moment-video-container {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.moment-image,
+.moment-video {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.moment-image:hover {
+    transform: scale(1.05);
+}
+
+.moment-video {
+    cursor: default;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    border-radius: 15px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.modal-image {
+    max-height: 80vh;
+    object-fit: contain;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 1em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .moment-image,
+    .moment-video {
+        height: 200px;
+    }
+    
+    .hero-section {
+        min-height: 200px;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading animation */
+.moment-item {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger animation delay */
+.moment-item:nth-child(1) { animation-delay: 0.1s; }
+.moment-item:nth-child(2) { animation-delay: 0.2s; }
+.moment-item:nth-child(3) { animation-delay: 0.3s; }
+.moment-item:nth-child(4) { animation-delay: 0.4s; }
+.moment-item:nth-child(5) { animation-delay: 0.5s; }
+.moment-item:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortOrder = document.getElementById('sortOrder');
+    const momentsGrid = document.getElementById('momentsGrid');
+    const noMoments = document.getElementById('noMoments');
+    
+    // Filter and sort moments
+    function filterAndSortMoments() {
+        const selectedCategory = categoryFilter.value;
+        const selectedSort = sortOrder.value;
+        const momentItems = document.querySelectorAll('.moment-item');
+        
+        let visibleCount = 0;
+        
+        momentItems.forEach(item => {
+            const category = item.dataset.category;
+            const shouldShow = !selectedCategory || category === selectedCategory;
+            
+            if (shouldShow) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Show/hide no moments message
+        if (visibleCount === 0) {
+            noMoments.style.display = 'block';
+        } else {
+            noMoments.style.display = 'none';
+        }
+        
+        // Sort moments
+        const momentsArray = Array.from(momentItems).filter(item => item.style.display !== 'none');
+        
+        momentsArray.sort((a, b) => {
+            const titleA = a.querySelector('.card-title').textContent.toLowerCase();
+            const titleB = b.querySelector('.card-title').textContent.toLowerCase();
+            const dateA = new Date(a.querySelector('.text-muted').textContent.split('/').reverse().join('-'));
+            const dateB = new Date(b.querySelector('.text-muted').textContent.split('/').reverse().join('-'));
+            
+            switch(selectedSort) {
+                case 'newest':
+                    return dateB - dateA;
+                case 'oldest':
+                    return dateA - dateB;
+                case 'title':
+                    return titleA.localeCompare(titleB);
+                default:
+                    return 0;
+            }
+        });
+        
+        // Reorder in DOM
+        momentsArray.forEach(item => {
+            momentsGrid.appendChild(item);
+        });
+    }
+    
+    // Event listeners
+    categoryFilter.addEventListener('change', filterAndSortMoments);
+    sortOrder.addEventListener('change', filterAndSortMoments);
+    
+    // Initialize
+    filterAndSortMoments();
+});
+</script>
+{% endblock %}

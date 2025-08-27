@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Βλασία - Χωριά του Βουνού Βλασίας{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block description %}Ανακαλύψτε τα όμορφα χωριά Άνω Βλασία (1.100μ) και Κάτω Βλασία (800μ) στο βουνό Βλασίας, Καλαβρύτων Αχαΐας. Φυσική ομορφιά, καταρράκτες, διαδρομές πεζοπορίας και παραδοσιακή φιλοξενία.{% endblock %}">
+    <meta name="keywords" content="Βλασία, Άνω Βλασία, Κάτω Βλασία, Καλαβρύτων, Αχαΐα, βουνό, καταρράκτης, πεζοπορία, φύση, Ελλάδα, Πελοπόννησος">
+    <meta name="author" content="Βλασία">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{% block og_title %}Βλασία - Χωριά του Βουνού Βλασίας{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Ανακαλύψτε τα όμορφα χωριά Άνω Βλασία και Κάτω Βλασία στο βουνό Βλασίας, Καλαβρύτων Αχαΐας{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('static', filename='uploads/vlasia_waterfal.jpg', _external=True) }}">
+    <meta property="og:site_name" content="Βλασία">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Βλασία - Χωριά του Βουνού Βλασίας{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Ανακαλύψτε τα όμορφα χωριά Άνω Βλασία και Κάτω Βλασία στο βουνό Βλασίας{% endblock %}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='uploads/vlasia_waterfal.jpg', _external=True) }}">
+    
+    <!-- Local Business Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TouristDestination",
+        "name": "Βλασία",
+        "description": "Δύο γραφικά χωριά στο βουνό Βλασίας: Άνω Βλασία (1.100μ) και Κάτω Βλασία (800μ)",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Καλαβρύτων",
+            "addressRegion": "Αχαΐα",
+            "addressCountry": "GR"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 37.998,
+            "longitude": 21.910
+        },
+        "url": "{{ request.url_root }}",
+        "image": "{{ url_for('static', filename='uploads/vlasia_waterfal.jpg', _external=True) }}"
+    }
+    </script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX', {
+            'page_title': document.title,
+            'page_location': window.location.href
+        });
+    </script>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <!-- Mobile Optimization CSS -->
+    <style>
+        /* Mobile-first responsive design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            .card-body {
+                padding: 1rem !important;
+            }
+            
+            .btn-lg {
+                padding: 0.75rem 1.5rem !important;
+                font-size: 1rem !important;
+            }
+            
+            .map-legend {
+                position: relative !important;
+                bottom: auto !important;
+                left: auto !important;
+                margin-top: 15px !important;
+                width: 100% !important;
+            }
+            
+            .sidebar {
+                margin-top: 2rem !important;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem !important;
+            }
+            
+            .footer-content {
+                text-align: center !important;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        .btn, .nav-link {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+        
+        /* Enhanced animations */
+        .hero-title {
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .card {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Enhanced focus states */
+        .btn:focus, .nav-link:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+        
+        /* Loading animation */
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2d5016;
+            --secondary-color: #4a7c59;
+            --accent-color: #8fbc8f;
+            --earth-color: #8b4513;
+            --forest-green: #228b22;
+            --mountain-gray: #696969;
+            --light-beige: #f5f5dc;
+            --dark-brown: #3e2723;
+        }
+        
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f5dc 0%, #e8f5e8 100%);
+            color: var(--dark-brown);
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--light-beige) !important;
+        }
+        
+        .navbar-nav .nav-link {
+            color: var(--light-beige) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(45, 80, 22, 0.7), rgba(74, 124, 89, 0.7)), 
+                        url('/static/uploads/vlasia_waterfal.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        /* Custom hero section για την αρχική σελίδα με την εικόνα του καταρράκτη */
+        .hero-section.vlasia-waterfall {
+            background: linear-gradient(rgba(45, 80, 22, 0.5), rgba(74, 124, 89, 0.5)), 
+                        url('/static/uploads/vlasia_waterfal.jpg');
+            background-color: var(--primary-color); /* Fallback color */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Fallback για browsers που δεν υποστηρίζουν background-attachment: fixed */
+        @supports (background-attachment: fixed) {
+            .hero-section.vlasia-waterfall {
+                background-attachment: fixed;
+            }
+        }
+        
+        .hero-section.vlasia-waterfall .hero-title {
+            font-size: 4rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-section.vlasia-waterfall .hero-subtitle {
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            margin-bottom: 2.5rem;
+        }
+        
+        .hero-section.vlasia-waterfall .btn {
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(transparent, var(--light-beige));
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .footer {
+            background: linear-gradient(90deg, var(--dark-brown) 0%, var(--primary-color) 100%);
+            color: var(--light-beige);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+        
+        .newsletter-form .input-group {
+            max-width: 300px;
+        }
+        
+        .newsletter-form .form-control {
+            border-radius: 20px 0 0 20px;
+            border: 1px solid var(--light-beige);
+        }
+        
+        .newsletter-form .btn {
+            border-radius: 0 20px 20px 0;
+            border: 1px solid var(--light-beige);
+        }
+        
+        .map-container {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .map-overlay {
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .map-overlay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+        }
+        
+        .category-badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .article-meta {
+            color: var(--mountain-gray);
+            font-size: 0.9rem;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar h4 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar .list-group-item {
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            background: var(--light-beige);
+        }
+        
+        .sidebar .list-group-item:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .pagination .page-link {
+            color: var(--primary-color);
+            border-color: var(--accent-color);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .alert {
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .alert-success {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .alert-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(143, 188, 143, 0.25);
+        }
+        
+        .nature-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a7c59' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-section.vlasia-waterfall {
+                background-attachment: scroll;
+                min-height: 80vh;
+            }
+            
+            .hero-section.vlasia-waterfall .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-section.vlasia-waterfall .hero-subtitle {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="nature-pattern">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-tree me-2"></i>Βλασία
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="fas fa-home me-1"></i>Αρχική
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('news') }}">
+                            <i class="fas fa-newspaper me-1"></i>Νέα
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">
+                            <i class="fas fa-info-circle me-1"></i>Σχετικά
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('moments') }}">
+                            <i class="fas fa-camera-retro me-1"></i>Στιγμές
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('contact') }}">
+                            <i class="fas fa-envelope me-1"></i>Επικοινωνία
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Αποσύνδεση
+                            </a>
+                        </li>
+                        {% if current_user.is_admin %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/">
+                                    <i class="fas fa-cog me-1"></i>Admin
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Σύνδεση
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-tree me-2"></i>Βλασία</h5>
+                    <p>Δύο όμορφα χωριά στο βουνό Βλασίας: Άνω Βλασία (1.100μ) και Κάτω Βλασία (800μ), 
+                    στην περιοχή των <strong>Καλαβρύτων της Αχαΐας</strong>. Εδώ βρίσκεται η καρδιά της φύσης.</p>
+                    <a href="https://maps.app.goo.gl/ksx1zUy7zKxxataF9" target="_blank" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-map-marked-alt me-2"></i>Δείτε στο Χάρτη
+                    </a>
+                </div>
+                <div class="col-md-2">
+                    <h6>Σύνδεσμοι</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-light">Αρχική</a></li>
+                        <li><a href="{{ url_for('news') }}" class="text-light">Νέα</a></li>
+                        <li><a href="{{ url_for('about') }}" class="text-light">Σχετικά</a></li>
+                        <li><a href="{{ url_for('moments') }}" class="text-light">Στιγμές</a></li>
+                        <li><a href="{{ url_for('contact') }}" class="text-light">Επικοινωνία</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h6>Επικοινωνία</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i>vlasia.blog@gmail.com</li>
+                        <li><i class="fas fa-phone me-2"></i>+30 2510 123 456</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Newsletter</h6>
+                    <p class="small">Μείνετε ενημερωμένοι για τα νέα της Βλασίας!</p>
+                    <form class="newsletter-form" method="POST" action="{{ url_for('subscribe_newsletter') }}">
+                        <div class="input-group">
+                            <input type="email" class="form-control form-control-sm" name="email" placeholder="Το email σας" required>
+                            <button class="btn btn-outline-light btn-sm" type="submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 Βλασία. Όλα τα δικαιώματα διατηρούνται.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Image Viewer Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="imageModalLabel">Προβολή Εικόνας</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-0">
+                    <img id="modalImage" src="" class="img-fluid" alt="Προβολή εικόνας">
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Κλείσιμο</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Image Modal -->
+    <script>
+        // Function to open image modal
+        function openImageModal(imageSrc, imageAlt) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('modalImage').alt = imageAlt;
+            document.getElementById('imageModalLabel').textContent = imageAlt || 'Προβολή Εικόνας';
+            
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+            
+            // Track image view in analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'image_view', {
+                    'event_category': 'engagement',
+                    'event_label': imageAlt || 'Unknown Image',
+                    'value': 1
+                });
+            }
+        }
+        
+        // Make function globally available
+        window.openImageModal = openImageModal;
+        
+        // Enhanced Analytics Tracking
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track newsletter subscription
+            const newsletterForm = document.querySelector('.newsletter-form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', function() {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'newsletter_signup', {
+                            'event_category': 'engagement',
+                            'event_label': 'Footer Newsletter',
+                            'value': 1
+                        });
+                    }
+                });
+            }
+            
+            // Track contact form submission
+            const contactForm = document.querySelector('form[action*="contact"]');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function() {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'contact_form_submit', {
+                            'event_category': 'engagement',
+                            'event_label': 'Contact Form',
+                            'value': 1
+                        });
+                    }
+                });
+            }
+            
+            // Track external link clicks
+            const externalLinks = document.querySelectorAll('a[target="_blank"]');
+            externalLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'external_link_click', {
+                            'event_category': 'engagement',
+                            'event_label': link.href,
+                            'value': 1
+                        });
+                    }
+                });
+            });
+            
+            // Track map interactions
+            const mapLinks = document.querySelectorAll('a[href*="maps"]');
+            mapLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'map_interaction', {
+                            'event_category': 'engagement',
+                            'event_label': 'Google Maps',
+                            'value': 1
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

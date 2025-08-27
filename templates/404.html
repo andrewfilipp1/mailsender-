@@ -1,0 +1,85 @@
+α{% extends "base.html" %}
+
+{% block title %}Σελίδα δεν βρέθηκε - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-mountain fa-5x text-primary"></i>
+                    </div>
+                    <h1 class="display-1 text-primary fw-bold">404</h1>
+                    <h2 class="mb-4">Η σελίδα δεν βρέθηκε</h2>
+                    <p class="lead text-muted mb-4">
+                        Φαίνεται ότι χάσατε το μονοπάτι σας στο βουνό Βλασίας, μεταξύ Άνω και Κάτω Βλασίας. 
+                        Η σελίδα που αναζητάτε δεν υπάρχει ή έχει μετακινηθεί.
+                    </p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-lightbulb me-2"></i>Τι μπορείτε να κάνετε;
+                                    </h5>
+                                    <ul class="list-unstyled text-start">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2 text-success"></i>
+                                            Ελέγξτε αν η διεύθυνση URL είναι σωστή
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2 text-success"></i>
+                                            Χρησιμοποιήστε τη μπάρα αναζήτησης για να βρείτε το περιεχόμενο
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2 text-success"></i>
+                                            Επιστρέψτε στην αρχική σελίδα
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-check-circle me-2 text-success"></i>
+                                            Επικοινωνήστε μαζί μας αν χρειάζεστε βοήθεια
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-home me-2"></i>Αρχική σελίδα
+                        </a>
+                        <a href="{{ url_for('news') }}" class="btn btn-outline-primary btn-lg me-3">
+                            <i class="fas fa-newspaper me-2"></i>Νέα
+                        </a>
+                        <a href="{{ url_for('contact') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-envelope me-2"></i>Επικοινωνία
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.display-1 {
+    font-size: 6rem;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .display-1 {
+        font-size: 4rem;
+    }
+}
+</style>
+{% endblock %}

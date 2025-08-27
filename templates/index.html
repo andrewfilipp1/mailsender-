@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Βλασία - Αρχική{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section vlasia-waterfall" style="background: linear-gradient(rgba(45, 80, 22, 0.5), rgba(74, 124, 89, 0.5)), url('{{ url_for('static', filename='uploads/vlasia_waterfal.jpg') }}'); background-size: cover; background-position: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">Καλώς ήρθατε στη Βλασία</h1>
+                <p class="hero-subtitle">Το όμορφο χωριό με τα πράσινα δάση και τα ψηλά βουνά</p>
+                <a href="{{ url_for('news') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-newspaper me-2"></i>Δείτε τα τελευταία νέα
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container mt-5">
+    <!-- Welcome Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-primary mb-3">
+                        <i class="fas fa-mountain me-2"></i>Καλώς ήρθατε στη Βλασία
+                    </h2>
+                    <p class="card-text lead">
+                        Η Βλασία αποτελείται από δύο γραφικά χωριά στο βουνό Βλασίας: την Άνω Βλασία (1.100μ) στην κορυφή 
+                        και την Κάτω Βλασία (800μ) στη μέση του βουνού, στην περιοχή των Καλαβρύτων της Αχαΐας. 
+                        Εδώ μπορείτε να βρείτε όλα τα νέα και τις ανακοινώσεις που αφορούν τα χωριά μας.
+                    </p>
+                    <p class="card-text">
+                        Από εκδηλώσεις και γιορτές μέχρι σημαντικές ανακοινώσεις και ιστορικά 
+                        στοιχεία, η Βλασία διατηρεί ζωντανή την παράδοση και την κοινότητα της.
+                    </p>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-info-circle me-2"></i>Μάθετε περισσότερα
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="sidebar">
+                <h4><i class="fas fa-bolt me-2"></i>Γρήγορες Ενέργειες</h4>
+                <div class="list-group">
+                    <a href="{{ url_for('news') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <i class="fas fa-newspaper me-2"></i>Όλα τα Νέα
+                        <span class="badge bg-primary rounded-pill">
+                            {{ news_items|length }}
+                        </span>
+                    </a>
+                    <a href="{{ url_for('about') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-info-circle me-2"></i>Σχετικά με το Χωριό
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope me-2"></i>Επικοινωνία
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <h6><i class="fas fa-clock me-2"></i>Τελευταία ενημέρωση</h6>
+                    <p class="text-muted small">Σήμερα</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest News Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-newspaper me-2"></i>Τελευταία Νέα
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for news_item in news_items %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                {% if news_item.media_path and news_item.media_type == 'image' %}
+                <img src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" 
+                     class="card-img-top" 
+                     style="cursor: pointer;"
+                     alt="{{ news_item.title }}"
+                     onclick="openImageModal('{{ url_for('static', filename='uploads/' + news_item.media_path) }}', '{{ news_item.title }}')"
+                     title="Κάντε κλικ για μεγαλύτερη προβολή">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                    <i class="fas fa-mountain fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ news_item.title }}</h5>
+                    <p class="card-text">{{ news_item.content[:100] }}{% if news_item.content|length > 100 %}...{% endif %}</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="article-meta">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ news_item.created_at.strftime('%d/%m/%Y') }}
+                        </small>
+                        <a href="{{ url_for('news_detail', news_id=news_item.id) }}" class="btn btn-sm btn-outline-primary">
+                            Διαβάστε περισσότερα
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card text-center" style="background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%); color: white;">
+                <div class="card-body p-5">
+                    <h3 class="card-title mb-3">
+                        <i class="fas fa-bell me-2"></i>Μείνετε ενημερωμένοι
+                    </h3>
+                    <p class="card-text mb-4">
+                        Εγγραφείτε για να λαμβάνετε ειδοποιήσεις για τα τελευταία νέα και τις εκδηλώσεις του χωριού.
+                    </p>
+                    <a href="{{ url_for('news') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-arrow-right me-2"></i>Δείτε όλα τα νέα
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Village Features -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-star me-2"></i>Γιατί η Βλασία;
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-mountain fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Φυσική Ομορφιά</h5>
+                    <p class="card-text">Βουνά, δάση και καθαρός αέρας για όλους τους επισκέπτες.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Ζωντανή Κοινότητα</h5>
+                    <p class="card-text">Εκδηλώσεις, γιορτές και δραστηριότητες όλο το χρόνο.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-history fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Πλούσια Ιστορία</h5>
+                    <p class="card-text">Παραδόσεις και ιστορικά στοιχεία που διατηρούνται ζωντανά.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Αγάπη για τη Φύση</h5>
+                    <p class="card-text">Προστασία του περιβάλλοντος και βιώσιμη ανάπτυξη.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Δημιουργία Νέας Ειδήσεως - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Δημιουργία Νέας Ειδήσεως
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label fw-bold") }}
+                            {{ form.title(class="form-control form-control-lg", placeholder="Εισάγετε τον τίτλο της είδησης...") }}
+                            {% if form.title.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.title.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.content.label(class="form-label fw-bold") }}
+                            {{ form.content(class="form-control", rows="8", placeholder="Εισάγετε το κείμενο της είδησης...") }}
+                            {% if form.content.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.content.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.media.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                {{ form.media(class="form-control", accept="image/*,video/*") }}
+                                <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('media').click()">
+                                    <i class="fas fa-upload me-1"></i>Επιλογή Αρχείου
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Επιτρέπονται: JPG, PNG, GIF, MP4, AVI, MOV (μέγιστο μέγεθος: 16MB)
+                            </div>
+                            {% if form.media.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.media.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('news') }}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i>Ακύρωση
+                            </a>
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(45, 80, 22, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+}
+
+.btn-secondary {
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

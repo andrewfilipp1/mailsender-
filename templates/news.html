@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Νέα - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card text-center" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                <div class="card-body p-4">
+                    <h1 class="card-title">
+                        <i class="fas fa-newspaper me-2"></i>Νέα και Ανακοινώσεις
+                    </h1>
+                    <p class="card-text lead">
+                        Μείνετε ενημερωμένοι για όλα τα σημαντικά γεγονότα και τις ανακοινώσεις του χωριού μας
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('news') }}" class="row g-3">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" name="search" 
+                                       placeholder="Αναζήτηση στις ανακοινώσεις..." 
+                                       value="{{ search_query or '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Αναζήτηση
+                            </button>
+                        </div>
+                    </form>
+                    {% if search_query %}
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Αποτελέσματα για: <strong>"{{ search_query }}"</strong>
+                            <a href="{{ url_for('news') }}" class="ms-2 text-decoration-none">
+                                <i class="fas fa-times"></i> Καθαρισμός
+                            </a>
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- News List -->
+            {% if news_items.items %}
+                {% for news_item in news_items.items %}
+                <div class="card mb-4">
+                    <div class="row g-0">
+                        <div class="col-md-3">
+                            {% if news_item.media_path and news_item.media_type == 'image' %}
+                            <img src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" 
+                                 class="img-fluid rounded-start h-100" 
+                                 style="object-fit: cover; max-height: 150px; cursor: pointer;" 
+                                 alt="{{ news_item.title }}"
+                                 onclick="openImageModal('{{ url_for('static', filename='uploads/' + news_item.media_path) }}', '{{ news_item.title }}')"
+                                 title="Κάντε κλικ για μεγαλύτερη προβολή">
+                            {% elif news_item.media_path and news_item.media_type == 'video' %}
+                            <div class="bg-dark text-white h-100 d-flex align-items-center justify-content-center" style="max-height: 150px;">
+                                <i class="fas fa-play-circle fa-2x"></i>
+                            </div>
+                            {% else %}
+                            <div class="bg-light h-100 d-flex align-items-center justify-content-center" style="max-height: 150px;">
+                                <i class="fas fa-newspaper fa-2x text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <span class="category-badge">
+                                        {% if news_item.media_type == 'image' %}
+                                            <i class="fas fa-image me-1"></i>Εικόνα
+                                        {% elif news_item.media_type == 'video' %}
+                                            <i class="fas fa-video me-1"></i>Βίντεο
+                                        {% else %}
+                                            <i class="fas fa-newspaper me-1"></i>Κείμενο
+                                        {% endif %}
+                                    </span>
+                                    <small class="article-meta ms-2">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ news_item.created_at.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </div>
+                                <h4 class="card-title">{{ news_item.title }}</h4>
+                                <p class="card-text">{{ news_item.content[:200] }}{% if news_item.content|length > 200 %}...{% endif %}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ news_item.created_at.strftime('%H:%M') }}
+                                    </small>
+                                    <a href="{{ url_for('news_detail', news_id=news_item.id) }}" class="btn btn-primary">
+                                        Διαβάστε περισσότερα
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Pagination -->
+                {% if news_items.pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if news_items.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('news', page=news_items.prev_num, search=search_query) }}">
+                                <i class="fas fa-chevron-left"></i> Προηγούμενη
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for page_num in news_items.iter_pages() %}
+                            {% if page_num %}
+                                                        {% if page_num != news_items.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('news', page=page_num, search=search_query) }}">{{ page_num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if news_items.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('news', page=news_items.next_num, search=search_query) }}">
+                                Επόμενη <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            {% else %}
+                <div class="card text-center">
+                    <div class="card-body p-5">
+                        <i class="fas fa-newspaper fa-4x text-muted mb-3"></i>
+                        <h4 class="card-title">Δεν βρέθηκαν είδησεις</h4>
+                        <p class="card-text">Δεν υπάρχουν δημοσιευμένες είδησεις αυτή τη στιγμή.</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Επιστροφή στην αρχική
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+
+
+            <div class="sidebar mb-4">
+                <h4><i class="fas fa-filter me-2"></i>Φιλτράρισμα</h4>
+                <div class="list-group">
+                    <a href="{{ url_for('news') }}" class="list-group-item list-group-item-action active">
+                        Όλες οι είδησεις
+                    </a>
+                    <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action">
+                        Αρχική σελίδα
+                    </a>
+                    <a href="{{ url_for('about') }}" class="list-group-item list-group-item-action">
+                        Σχετικά με το χωριό
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="list-group-item list-group-item-action">
+                        Επικοινωνία
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h4><i class="fas fa-info-circle me-2"></i>Πληροφορίες</h4>
+                <div class="text-center">
+                    <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
+                    <h6>Συνολικές είδησεις</h6>
+                    <p class="h4 text-primary">{{ news_items.total if news_items.total else 0 }}</p>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <i class="fas fa-calendar fa-3x text-primary mb-3"></i>
+                    <h6>Τελευταία ενημέρωση</h6>
+                    <p class="text-muted small">Σήμερα</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

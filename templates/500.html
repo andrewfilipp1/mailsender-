@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Σφάλμα διακομιστή - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
+                    </div>
+                    <h1 class="display-1 text-warning fw-bold">500</h1>
+                    <h2 class="mb-4">Σφάλμα διακομιστή</h2>
+                    <p class="lead text-muted mb-4">
+                        Κάτι πήγε στραβά στον διακομιστή μας. Η ομάδα μας έχει ειδοποιηθεί 
+                        και εργάζεται για να διορθώσει το πρόβλημα.
+                    </p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-tools me-2"></i>Τι μπορείτε να κάνετε;
+                                    </h5>
+                                    <ul class="list-unstyled text-start">
+                                        <li class="mb-2">
+                                            <i class="fas fa-sync-alt me-2 text-info"></i>
+                                            Ανανεώστε τη σελίδα σε λίγα λεπτά
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-home me-2 text-success"></i>
+                                            Επιστρέψτε στην αρχική σελίδα
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-clock me-2 text-warning"></i>
+                                            Δοκιμάστε ξανά αργότερα
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-envelope me-2 text-primary"></i>
+                                            Επικοινωνήστε μαζί μας αν το πρόβλημα συνεχίζεται
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-home me-2"></i>Αρχική σελίδα
+                        </a>
+                        <a href="{{ url_for('contact') }}" class="btn btn-outline-warning btn-lg me-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Αναφέρετε πρόβλημα
+                        </a>
+                        <button onclick="location.reload()" class="btn btn-outline-info btn-lg">
+                            <i class="fas fa-sync-alt me-2"></i>Ανανέωση
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.display-1 {
+    font-size: 6rem;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .display-1 {
+        font-size: 4rem;
+    }
+}
+</style>
+{% endblock %}

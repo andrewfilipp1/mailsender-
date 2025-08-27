@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Αρχική</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('news') }}">Νέα</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('category', slug=article.category.slug) }}">{{ article.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ article.title[:30] }}{% if article.title|length > 30 %}...{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Article Content -->
+        <div class="col-lg-8">
+            <article class="card">
+                <!-- Article Header -->
+                <div class="card-header bg-transparent border-0 pt-4">
+                    <div class="mb-3">
+                        <span class="category-badge">{{ article.category.name }}</span>
+                        <small class="article-meta ms-3">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ article.created_at.strftime('%d/%m/%Y') }}
+                        </small>
+                        <small class="article-meta ms-3">
+                            <i class="fas fa-user me-1"></i>
+                            {{ article.author.username }}
+                        </small>
+                    </div>
+                    <h1 class="card-title h2">{{ article.title }}</h1>
+                    {% if article.excerpt %}
+                    <p class="lead text-muted">{{ article.excerpt }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Article Image -->
+                {% if article.image_path %}
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename='uploads/' + article.image_path) }}" 
+                         class="img-fluid rounded" alt="{{ article.title }}"
+                         style="max-height: 500px; object-fit: cover;">
+                </div>
+                {% endif %}
+
+                <!-- Article Content -->
+                <div class="card-body">
+                    <div class="article-content">
+                        {{ article.content|safe }}
+                    </div>
+                    
+                    <!-- Article Footer -->
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted">
+                            <small>
+                                <i class="fas fa-clock me-1"></i>
+                                Δημοσιεύθηκε στις {{ article.created_at.strftime('%d/%m/%Y %H:%M') }}
+                            </small>
+                        </div>
+                        <div class="share-buttons">
+                            <button class="btn btn-outline-primary btn-sm me-2" onclick="shareOnFacebook()">
+                                <i class="fab fa-facebook me-1"></i>Μοιραστείτε
+                            </button>
+                            <button class="btn btn-outline-info btn-sm me-2" onclick="shareOnTwitter()">
+                                <i class="fab fa-twitter me-1"></i>Tweet
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="copyLink()">
+                                <i class="fas fa-link me-1"></i>Αντιγραφή
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Related Articles -->
+            {% if related_articles %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-newspaper me-2"></i>Σχετικά άρθρα
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for related in related_articles[:3] %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                {% if related.image_path %}
+                                <img src="{{ url_for('static', filename='uploads/' + related.image_path) }}" 
+                                     class="card-img-top" alt="{{ related.title }}" style="height: 120px; object-fit: cover;">
+                                {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 120px;">
+                                    <i class="fas fa-mountain fa-2x text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ related.title[:50] }}{% if related.title|length > 50 %}...{% endif %}</h6>
+                                    <small class="text-muted">{{ related.created_at.strftime('%d/%m/%Y') }}</small>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <a href="{{ url_for('article_detail', slug=related.slug) }}" class="btn btn-sm btn-outline-primary">
+                                        Διαβάστε
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Author Info -->
+            <div class="sidebar mb-4">
+                <h4><i class="fas fa-user me-2"></i>Σχετικά με τον συγγραφέα</h4>
+                <div class="text-center">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-user fa-2x text-white"></i>
+                    </div>
+                    <h6>{{ article.author.username }}</h6>
+                    <p class="text-muted small">Μέλος από {{ article.author.created_at.strftime('%m/%Y') }}</p>
+                </div>
+            </div>
+
+            <!-- Category Info -->
+            <div class="sidebar mb-4">
+                <h4><i class="fas fa-tag me-2"></i>Κατηγορία</h4>
+                <div class="text-center">
+                    <span class="category-badge fs-5">{{ article.category.name }}</span>
+                    <p class="text-muted mt-2">{{ article.category.description or 'Δεν υπάρχει περιγραφή' }}</p>
+                    <a href="{{ url_for('category', slug=article.category.slug) }}" class="btn btn-outline-primary btn-sm">
+                        Δείτε όλα τα άρθρα
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="sidebar mb-4">
+                <h4><i class="fas fa-chart-bar me-2"></i>Στατιστικά</h4>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h5 class="text-primary">{{ article.category.articles|length }}</h5>
+                            <small class="text-muted">Άρθρα στην κατηγορία</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h5 class="text-primary">{{ moment().diff(article.created_at, 'days') if moment else '0' }}</h5>
+                        <small class="text-muted">Ημέρες πριν</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to News -->
+            <div class="sidebar">
+                <div class="text-center">
+                    <a href="{{ url_for('news') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-arrow-left me-2"></i>Επιστροφή στα νέα
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-home me-2"></i>Αρχική σελίδα
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Scripts -->
+<script>
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('{{ article.title }}');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('{{ article.title }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        // Show success message
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check me-1"></i>Αντιγράφηκε!';
+        button.classList.remove('btn-outline-success');
+        button.classList.add('btn-success');
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-success');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

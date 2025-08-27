@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Σύνδεση - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg">
+                <div class="card-header text-center py-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <i class="fas fa-user-lock fa-3x mb-3"></i>
+                    <h3 class="mb-0">Σύνδεση</h3>
+                    <p class="mb-0 mt-2">Συνδεθείτε για να διαχειριστείτε το περιεχόμενο</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.username.id }}" class="form-label">
+                                <i class="fas fa-user me-2"></i>Όνομα χρήστη
+                            </label>
+                            {{ form.username(class="form-control form-control-lg", placeholder="Εισάγετε το όνομα χρήστη σας") }}
+                            {% if form.username.errors %}
+                                {% for error in form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.password.id }}" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Κωδικός πρόσβασης
+                            </label>
+                            {{ form.password(class="form-control form-control-lg", placeholder="Εισάγετε τον κωδικό πρόσβασης σας") }}
+                            {% if form.password.errors %}
+                                {% for error in form.password.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Δεν έχετε λογαριασμό;</p>
+                        <p class="small text-muted">
+                            Επικοινωνήστε με τον διαχειριστή για να δημιουργήσετε λογαριασμό.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info Card -->
+            <div class="card mt-4 border-0" style="background: var(--light-beige);">
+                <div class="card-body text-center">
+                    <i class="fas fa-info-circle fa-2x text-primary mb-2"></i>
+                    <h6>Πληροφορίες σύνδεσης</h6>
+                    <p class="small text-muted mb-0">
+                        Χρησιμοποιήστε τα στοιχεία που σας έχει δώσει ο διαχειριστής του site.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 20px;
+}
+
+.form-control {
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(143, 188, 143, 0.25);
+}
+
+.btn {
+    border-radius: 15px;
+    font-weight: 500;
+}
+
+.card-header {
+    border-radius: 20px 20px 0 0 !important;
+}
+</style>
+{% endblock %}

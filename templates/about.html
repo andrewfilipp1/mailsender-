@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+
+{% block title %}Σχετικά - Βλασία{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background: linear-gradient(rgba(45, 80, 22, 0.8), rgba(74, 124, 89, 0.8)), 
+                                    url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">Σχετικά με τη Βλασία</h1>
+                <p class="hero-subtitle">Ανακαλύψτε την ιστορία και την ομορφιά του χωριού μας</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <!-- Village Overview -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-primary mb-4">
+                        <i class="fas fa-mountain me-2"></i>Η Βλασία
+                    </h2>
+                    <p class="lead">
+                        Η Βλασία αποτελείται από δύο γραφικά χωριά που βρίσκονται στο βουνό Βλασίας: 
+                        την <strong>Άνω Βλασία</strong> (1.100μ) στην κορυφή και την <strong>Κάτω Βλασία</strong> (800μ) στη μέση του βουνού.
+                    </p>
+                    <p>
+                        Τα χωριά μας περιτριγυρίζονται από πράσινα δάση ελάτης και βελανιδιάς, 
+                        προσφέροντας πανοραμική θέα προς την κοιλάδα των Καλαβρύτων και φυσική ομορφιά που θα σας εντυπωσιάσει.
+                    </p>
+                    <p>
+                        Εδώ θα βρείτε καθαρό αέρα, καταρράκτες, διαδρομές πεζοπορίας και μια ζωντανή κοινότητα που 
+                        διατηρεί τις παραδόσεις και διοργανώνει εκδηλώσεις όλο το χρόνο.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="sidebar">
+                <h4><i class="fas fa-map-marker-alt me-2"></i>Τοποθεσία</h4>
+                <div class="text-center mb-3">
+                    <i class="fas fa-mountain fa-3x text-primary"></i>
+                </div>
+                <p class="text-muted small">
+                    Η Βλασία βρίσκεται στην <strong>Πελοπόννησο, Αχαΐα, Καλαβρύτων</strong>, 
+                    στο βουνό Βλασίας, προσφέροντας εντυπωσιακά τοπία και φυσική ομορφιά.
+                </p>
+                <div class="text-center">
+                    <a href="https://maps.app.goo.gl/ksx1zUy7zKxxataF9" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-map-marked-alt me-2"></i>Δείτε στο Χάρτη
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-star me-2"></i>Τι κάνει τη Βλασία μοναδική
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-tree fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Πράσινα Δάση</h5>
+                    <p class="card-text">
+                        Περιτριγυρισμένη από πλούσια βλάστηση και δάση που προσφέρουν 
+                        καταφύγιο για άγρια ζώα και ευκαιρίες για πεζοπορία.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-mountain fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Βουνά και Τοπία</h5>
+                    <p class="card-text">
+                        Εντυπωσιακά βουνά που προσφέρουν πανοραμικές θέσεις και 
+                        ευκαιρίες για αθλητικές δραστηριότητες.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Ζωντανή Κοινότητα</h5>
+                    <p class="card-text">
+                        Μια κοινότητα που διατηρεί ζωντανές τις παραδόσεις και 
+                        διοργανώνει εκδηλώσεις όλο το χρόνο.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Αγάπη για τη Φύση</h5>
+                    <p class="card-text">
+                        Προστασία του περιβάλλοντος και βιώσιμη ανάπτυξη 
+                        για τις επόμενες γενιές.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-primary mb-3">
+                        <i class="fas fa-history me-2"></i>Ιστορία και Παράδοση
+                    </h3>
+                    <p>
+                        Η Βλασία έχει πλούσια ιστορία που εκτείνεται σε πολλούς αιώνες. 
+                        Το χωριό έχει διατηρήσει τις παραδόσεις του και συνεχίζει να 
+                        είναι ένας σημαντικός πολιτιστικός κόμβος της περιοχής.
+                    </p>
+                    <p>
+                        Οι κάτοικοι της Βλασίας είναι γνωστοί για την αγάπη τους 
+                        προς τη φύση και την προστασία του περιβάλλοντος, καθώς και 
+                        για τη διατήρηση των τοπικών παραδόσεων και γιορτών.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-primary mb-3">
+                        <i class="fas fa-calendar-alt me-2"></i>Εκδηλώσεις και Γιορτές
+                    </h3>
+                    <p>
+                        Το χωριό διοργανώνει πολλές εκδηλώσεις καθ' όλη τη διάρκεια του χρόνου, 
+                        από παραδοσιακές γιορτές μέχρι σύγχρονες δραστηριότητες.
+                    </p>
+                    <p>
+                        Οι επισκέπτες μπορούν να συμμετέχουν σε τοπικά φεστιβάλ, 
+                        να γευτούν παραδοσιακά φαγητά και να μάθουν για την ιστορία 
+                        και την κουλτούρα της περιοχής.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Map Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <h3 class="mb-0">
+                        <i class="fas fa-map-marked-alt me-2"></i>Χάρτης Βλασίας & Διαδρομές Βουνού
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="map-container" style="position: relative; height: 600px; overflow: hidden;">
+                        <!-- Interactive Map -->
+                        <div id="vlasiaMap" style="width: 100%; height: 600px;"></div>
+                        <!-- Map Controls Overlay -->
+                        <div class="map-overlay" style="position: absolute; top: 20px; right: 10px; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 250px; backdrop-filter: blur(10px); z-index: 1000;">
+                            <h5 class="mb-2"><i class="fas fa-map-marker-alt text-danger"></i> Βλασία</h5>
+                            <p class="mb-1"><strong>📍 Τοποθεσία:</strong> Βόρεια Ελλάδα</p>
+                            <p class="mb-1"><strong>🏔️ Υψόμετρο:</strong> ~800μ</p>
+                            <p class="mb-1"><strong>🗺️ Συντεταγμένες:</strong> 37.998°N, 21.910°E</p>
+                            
+                            <div class="mb-2">
+                                <h6 class="text-success mb-2">
+                                    <i class="fas fa-hiking me-2"></i>Διαδρομές
+                                </h6>
+                                <div class="btn-group-vertical w-100" role="group">
+                                    <button type="button" class="btn btn-outline-success btn-sm mb-1" onclick="showHikingTrail('waterfall')">
+                                        <i class="fas fa-water me-1"></i>Καταρράκτης
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mb-1" onclick="showHikingTrail('mountain')">
+                                        <i class="fas fa-mountain me-1"></i>Κορυφή
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info btn-sm mb-1" onclick="showHikingTrail('forest')">
+                                        <i class="fas fa-tree me-1"></i>Δάσος
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetTrails()">
+                                        <i class="fas fa-undo me-1"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <a href="https://el.wikiloc.com/wikiloc/map.do?sw=37.98904332481785%2C21.89309120178223&ne=38.00750825176138%2C21.92605018615723&page=1" target="_blank" class="btn btn-primary btn-sm w-100 mb-1">
+                                    <i class="fas fa-external-link-alt me-1"></i>Wikiloc
+                                </a>
+                                <a href="https://maps.app.goo.gl/ksx1zUy7zKxxataF9" target="_blank" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-map-marked-alt me-1"></i>Maps
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Map Legend -->
+                        <div class="map-legend" style="position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); backdrop-filter: blur(10px);">
+                            <h6 class="mb-2 text-primary">Υπόδειξη Χάρτη</h6>
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 50%; margin-right: 10px;"></div>
+                                <small>Άνω Βλασία (1.100μ)</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="width: 20px; height: 20px; background: #f39c12; border-radius: 50%; margin-right: 10px;"></div>
+                                <small>Κάτω Βλασία (800μ)</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 50%; margin-right: 10px; border: 2px solid #e74c3c; border-style: dashed;"></div>
+                                <small>Διαδρομή μεταξύ χωριών</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="width: 20px; height: 20px; background: #27ae60; border-radius: 50%; margin-right: 10px;"></div>
+                                <small>Διαδρομές Hiking</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="width: 20px; height: 20px; background: #3498db; border-radius: 50%; margin-right: 10px;"></div>
+                                <small>Σημεία Ενδιαφέροντος</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card text-center" style="background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%); color: white;">
+                <div class="card-body p-5">
+                    <h3 class="card-title mb-3">
+                        <i class="fas fa-map-marked-alt me-2"></i>Επισκεφθείτε τη Βλασία
+                    </h3>
+                    <p class="card-text mb-4">
+                        Ανακαλύψτε την ομορφιά της φύσης και τη ζεστή φιλοξενία της κοινότητάς μας.
+                    </p>
+                    <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg me-3">
+                        <i class="fas fa-envelope me-2"></i>Επικοινωνήστε μαζί μας
+                    </a>
+                    <a href="{{ url_for('news') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-newspaper me-2"></i>Δείτε τα τελευταία νέα
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Map JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<script>
+// Initialize the interactive map
+document.addEventListener('DOMContentLoaded', function() {
+    // Create map centered on Vlasia
+    const map = L.map('vlasiaMap').setView([37.998, 21.910], 14);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+    }).addTo(map);
+    
+    // Ano Vlasia Marker (Upper Village)
+    const anoVlasiaMarker = L.marker([38.002, 21.908], {
+        icon: L.divIcon({
+            className: 'ano-vlasia-marker',
+            html: '<div style="background: #e74c3c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        })
+    }).addTo(map);
+    
+    anoVlasiaMarker.bindPopup(`
+        <div style="text-align: center;">
+            <h5 style="color: #e74c3c; margin-bottom: 10px;">🏘️ Άνω Βλασία</h5>
+            <p><strong>Χωριό</strong></p>
+            <p><strong>Υψόμετρο:</strong> 1.100μ</p>
+            <p><strong>Τοποθεσία:</strong> Στην κορυφή του βουνού</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                Μικρό ορεινό χωριό με πανοραμική θέα
+            </p>
+        </div>
+    `);
+    
+    // Kato Vlasia Marker (Lower Village)
+    const katoVlasiaMarker = L.marker([37.998, 21.910], {
+        icon: L.divIcon({
+            className: 'kato-vlasia-marker',
+            html: '<div style="background: #f39c12; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        })
+    }).addTo(map);
+    
+    katoVlasiaMarker.bindPopup(`
+        <div style="text-align: center;">
+            <h5 style="color: #f39c12; margin-bottom: 10px;">🏘️ Κάτω Βλασία</h5>
+            <p><strong>Χωριό</strong></p>
+            <p><strong>Υψόμετρο:</strong> 800μ</p>
+            <p><strong>Τοποθεσία:</strong> Στη μέση του βουνού</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                Κύριος οικισμός με περισσότερους κατοίκους
+            </p>
+        </div>
+    `);
+    
+    // Hiking Trail Points
+    const hikingTrails = {
+        waterfall: {
+            coords: [37.995, 21.905],
+            name: 'Καταρράκτης Βλασίας',
+            description: 'Εντυπωσιακός καταρράκτης με καθαρό νερό',
+            icon: '💧',
+            color: '#27ae60'
+        },
+        mountain: {
+            coords: [38.005, 21.915],
+            name: 'Κορυφή Βουνού',
+            description: 'Πανοραμική θέα σε όλη την περιοχή',
+            icon: '🏔️',
+            color: '#3498db'
+        },
+        forest: {
+            coords: [37.990, 21.920],
+            name: 'Δασική Διαδρομή',
+            description: 'Όμορφη διαδρομή μέσα στο δάσος',
+            icon: '🌲',
+            color: '#2ecc71'
+        }
+    };
+    
+    // Add hiking trail markers
+    Object.keys(hikingTrails).forEach(trailKey => {
+        const trail = hikingTrails[trailKey];
+        const marker = L.marker(trail.coords, {
+            icon: L.divIcon({
+                className: 'hiking-marker',
+                html: `<div style="background: ${trail.color}; width: 18px; height: 18px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 10px;">${trail.icon}</div>`,
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            })
+        }).addTo(map);
+        
+        marker.bindPopup(`
+            <div style="text-align: center;">
+                <h6 style="color: ${trail.color}; margin-bottom: 8px;">${trail.icon} ${trail.name}</h6>
+                <p style="font-size: 0.9em; margin-bottom: 10px;">${trail.description}</p>
+                <button class="btn btn-sm btn-outline-primary" onclick="showHikingTrail('${trailKey}')">
+                    <i class="fas fa-map-marked-alt me-1"></i>Δείξε Διαδρομή
+                </button>
+            </div>
+        `);
+    });
+    
+    // Add hiking trail paths
+    const waterfallPath = L.polyline([
+        [37.998, 21.910], // Kato Vlasia
+        [37.995, 21.905]  // Waterfall
+    ], {
+        color: '#27ae60',
+        weight: 4,
+        opacity: 0.8,
+        dashArray: '10, 5'
+    }).addTo(map);
+    
+    const mountainPath = L.polyline([
+        [38.002, 21.908], // Ano Vlasia
+        [38.005, 21.915]  // Mountain
+    ], {
+        color: '#3498db',
+        weight: 4,
+        opacity: 0.8,
+        dashArray: '10, 5'
+    }).addTo(map);
+    
+    const forestPath = L.polyline([
+        [37.998, 21.910], // Kato Vlasia
+        [37.990, 21.920]  // Forest
+    ], {
+        color: '#2ecc71',
+        weight: 4,
+        opacity: 0.8,
+        dashArray: '10, 5'
+    }).addTo(map);
+    
+    // Path between the two villages
+    const villagesPath = L.polyline([
+        [37.998, 21.910], // Kato Vlasia
+        [38.002, 21.908]  // Ano Vlasia
+    ], {
+        color: '#e74c3c',
+        weight: 6,
+        opacity: 0.9,
+        dashArray: '15, 8'
+    }).addTo(map);
+    
+    // Store paths for show/hide functionality
+    window.hikingPaths = {
+        waterfall: waterfallPath,
+        mountain: mountainPath,
+        forest: forestPath
+    };
+    
+    // Add scale bar
+    L.control.scale({
+        imperial: false,
+        metric: true,
+        position: 'bottomleft'
+    }).addTo(map);
+});
+
+// Function to show/hide hiking trails
+function showHikingTrail(trailType) {
+    const paths = window.hikingPaths;
+    if (!paths) return;
+    
+    // Hide all paths first
+    Object.values(paths).forEach(path => {
+        path.setStyle({ opacity: 0.3 });
+    });
+    
+    // Show selected path
+    if (paths[trailType]) {
+        paths[trailType].setStyle({ opacity: 0.9, weight: 6 });
+        
+        // Pan to the trail
+        const map = paths[trailType]._map;
+        const bounds = L.latLngBounds([
+            [37.998, 21.910], // Vlasia
+            paths[trailType].getLatLngs()[1] // Trail end
+        ]);
+        map.fitBounds(bounds, { padding: [20, 20] });
+        
+        // Show info about the trail
+        showTrailInfo(trailType);
+    }
+}
+
+// Function to show trail information
+function showTrailInfo(trailType) {
+    const trailInfo = {
+        waterfall: {
+            name: 'Καταρράκτης Βλασίας',
+            distance: '2.5 km',
+            duration: '45 min',
+            difficulty: 'Εύκολο',
+            description: 'Όμορφη διαδρομή προς τον καταρράκτη της Βλασίας. Ιδανικό για οικογένειες.'
+        },
+        mountain: {
+            name: 'Κορυφή Βουνού',
+            distance: '4.2 km',
+            duration: '1.5 ώρες',
+            difficulty: 'Μετρίως Δύσκολο',
+            description: 'Αναρριχητική διαδρομή προς την κορυφή του βουνού. Εντυπωσιακή θέα.'
+        },
+        forest: {
+            name: 'Δασική Διαδρομή',
+            distance: '3.1 km',
+            duration: '1 ώρα',
+            difficulty: 'Εύκολο',
+            description: 'Διαδρομή μέσα στο δάσος με σκιά και φυσική ομορφιά.'
+        }
+    };
+    
+    const info = trailInfo[trailType];
+    if (info) {
+        // Create and show info modal
+        const modal = document.createElement('div');
+        modal.className = 'trail-info-modal';
+        modal.style.cssText = `
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 10000; max-width: 400px; width: 90%;
+        `;
+        
+        modal.innerHTML = `
+            <div class="text-center mb-3">
+                <h5 class="text-primary">${info.name}</h5>
+            </div>
+            <div class="row text-center mb-3">
+                <div class="col-4">
+                    <div class="text-success">
+                        <i class="fas fa-route"></i><br>
+                        <small>${info.distance}</small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="text-info">
+                        <i class="fas fa-clock"></i><br>
+                        <small>${info.duration}</small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="text-warning">
+                        <i class="fas fa-mountain"></i><br>
+                        <small>${info.difficulty}</small>
+                    </div>
+                </div>
+            </div>
+            <p class="text-muted">${info.description}</p>
+            <div class="text-center">
+                <button class="btn btn-primary btn-sm" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-check me-2"></i>Κατάλαβα
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (modal.parentElement) {
+                modal.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Reset all trails to normal view
+function resetTrails() {
+    const paths = window.hikingPaths;
+    if (paths) {
+        Object.values(paths).forEach(path => {
+            path.setStyle({ opacity: 0.8, weight: 4 });
+        });
+    }
+}
+</script>
+
+<style>
+.custom-marker, .hiking-marker {
+    background: transparent !important;
+}
+
+.map-container {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.map-overlay, .map-legend {
+    transition: all 0.3s ease;
+}
+
+.map-overlay:hover, .map-legend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+}
+
+.btn-group-vertical .btn {
+    transition: all 0.3s ease;
+}
+
+.btn-group-vertical .btn:hover {
+    transform: translateX(5px);
+}
+
+.trail-info-modal {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+</style>
+
+{% endblock %}

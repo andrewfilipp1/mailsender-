@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Επικοινωνία - Βλασία{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background: linear-gradient(rgba(45, 80, 22, 0.8), rgba(74, 124, 89, 0.8)), 
+                                    url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">Επικοινωνία</h1>
+                <p class="hero-subtitle">Επικοινωνήστε μαζί μας για οποιαδήποτε ερώτηση ή πληροφορία</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <!-- Contact Information -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-primary mb-4">
+                        <i class="fas fa-envelope me-2"></i>Επικοινωνήστε μαζί μας
+                    </h2>
+                    <p class="lead">
+                        Είμαστε εδώ για να απαντήσουμε σε οποιαδήποτε ερώτηση σας σχετικά με το χωριό, 
+                        τα νέα, τις εκδηλώσεις ή οποιαδήποτε άλλη πληροφορία χρειάζεστε.
+                    </p>
+                    <p>
+                        Μη διστάσετε να επικοινωνήσετε μαζί μας μέσω email, τηλεφώνου ή να 
+                        συμπληρώσετε τη φόρμα επικοινωνίας παρακάτω.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Contact Methods -->
+    <div class="row mb-5">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Email</h5>
+                    <p class="card-text">
+                        Στείλτε μας email για οποιαδήποτε ερώτηση ή πληροφορία.
+                    </p>
+                    <a href="mailto:vlasia.blog@gmail.com" class="btn btn-primary">
+                        <i class="fas fa-envelope me-2"></i>vlasia.blog@gmail.com
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-phone fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Τηλέφωνο</h5>
+                    <p class="card-text">
+                        Καλέστε μας για άμεση επικοινωνία και πληροφορίες.
+                    </p>
+                    <a href="tel:+301234567890" class="btn btn-primary">
+                        <i class="fas fa-phone me-2"></i>+30 1234 123 123
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Διεύθυνση</h5>
+                    <p class="card-text">
+                        Επισκεφθείτε μας στο χωριό για προσωπική επικοινωνία.
+                    </p>
+                    <span class="text-muted">
+                        Βλασία, Ελλάδα<br>
+                        Τ.Κ. 25001<br>
+                        <small>Περιοχή: Βόρεια Ελλάδα</small>
+                    </span>
+                    <a href="https://maps.app.goo.gl/ksx1zUy7zKxxataF9" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                        <i class="fas fa-map-marked-alt me-2"></i>Δείτε στο Χάρτη
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Map -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-map-marked-alt me-2"></i>Τοποθεσία της Βλασίας
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="map-container" style="position: relative; height: 400px; overflow: hidden;">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12345.678901234567!2d22.12345678901234!3d40.12345678901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDA3JzM0LjQiTiAyMsKwMDcnMzQuNCJF!5e0!3m2!1sel!2sgr!4v1234567890123"
+                            width="100%" 
+                            height="400" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                        <div class="map-overlay" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h6 class="mb-2"><i class="fas fa-map-marker-alt text-danger"></i> Βλασία</h6>
+                            <p class="small mb-1">Καλαβρύτων, Αχαΐα, Πελοπόννησος</p>
+                            <a href="https://maps.app.goo.gl/ksx1zUy7zKxxataF9" target="_blank" class="btn btn-primary btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i>Άνοιγμα στο Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>Φόρμα επικοινωνίας
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('contact') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Όνομα
+                                </label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Εισάγετε το όνομά σας" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Επώνυμο
+                                </label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Εισάγετε το επώνυμό σας" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Εισάγετε το email σας" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">
+                                <i class="fas fa-tag me-2"></i>Θέμα
+                            </label>
+                            <select class="form-select" id="subject" name="subject" required>
+                                <option value="">Επιλέξτε θέμα</option>
+                                <option value="general">Γενική ερώτηση</option>
+                                <option value="news">Νέα και ανακοινώσεις</option>
+                                <option value="events">Εκδηλώσεις</option>
+                                <option value="tourism">Τουρισμός</option>
+                                <option value="other">Άλλο</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">
+                                <i class="fas fa-comment me-2"></i>Μήνυμα
+                            </label>
+                            <textarea class="form-control" id="message" name="message" rows="5" placeholder="Γράψτε το μήνυμά σας..." required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Αποστολή μηνύματος
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="sidebar">
+                <h4><i class="fas fa-info-circle me-2"></i>Χρήσιμες πληροφορίες</h4>
+                <div class="mb-3">
+                    <h6><i class="fas fa-newspaper me-2 text-primary"></i>Νέα και ανακοινώσεις</h6>
+                    <p class="small text-muted">
+                        Μείνετε ενημερωμένοι για τα τελευταία νέα και τις ανακοινώσεις του χωριού.
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <h6><i class="fas fa-calendar me-2 text-primary"></i>Εκδηλώσεις</h6>
+                    <p class="small text-muted">
+                        Δείτε τις επερχόμενες εκδηλώσεις και γιορτές που διοργανώνει η κοινότητα.
+                    </p>
+                </div>
+                <div>
+                    <h6><i class="fas fa-map me-2 text-primary"></i>Οδηγίες</h6>
+                    <p class="small text-muted">
+                        Πώς να φτάσετε στη Βλασία και πού να μείνετε κατά την επίσκεψή σας.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-map me-2"></i>Πού βρίσκεται η Βλασία
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="text-center p-4" style="background: var(--light-beige);">
+                        <i class="fas fa-map-marked-alt fa-4x text-primary mb-3"></i>
+                        <h5>Χάρτης τοποθεσίας</h5>
+                        <p class="text-muted">
+                            Εδώ θα εμφανιστεί ένας διαδραστικός χάρτης με την ακριβή τοποθεσία της Βλασίας.
+                        </p>
+                        <p class="text-muted small">
+                            <strong>Συντεταγμένες:</strong> 40.1234° N, 22.5678° E<br>
+                            <strong>Υψόμετρο:</strong> 800m<br>
+                            <strong>Απόσταση από Αθήνα:</strong> 350km
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(143, 188, 143, 0.25);
+}
+
+.btn {
+    border-radius: 15px;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
