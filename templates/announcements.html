@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Ανακοινώσεις - Βλασία{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background: linear-gradient(rgba(45, 80, 22, 0.8), rgba(74, 124, 89, 0.8)), 
+                                    url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">Ανακοινώσεις</h1>
+                <p class="hero-subtitle">Σημαντικές ανακοινώσεις και ενημερώσεις από τη Βλασία</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-filter me-2"></i>Φίλτρα
+                    </h5>
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="category" class="form-label">Κατηγορία</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">Όλες οι κατηγορίες</option>
+                                {% for category in categories %}
+                                <option value="{{ category }}" {% if category == current_category %}selected{% endif %}>
+                                    {% if category == 'general' %}Γενική ανακοίνωση
+                                    {% elif category == 'event' %}Εκδήλωση
+                                    {% elif category == 'important' %}Σημαντική ανακοίνωση
+                                    {% elif category == 'news' %}Νέα
+                                    {% else %}{{ category }}{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="priority" class="form-label">Προτεραιότητα</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="">Όλες οι προτεραιότητες</option>
+                                {% for priority in priorities %}
+                                <option value="{{ priority }}" {% if priority == current_priority %}selected{% endif %}>
+                                    {% if priority == 'low' %}Χαμηλή
+                                    {% elif priority == 'normal' %}Κανονική
+                                    {% elif priority == 'high' %}Υψηλή
+                                    {% elif priority == 'urgent' %}Επείγουσα
+                                    {% else %}{{ priority }}{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i>Εφαρμογή
+                            </button>
+                            <a href="{{ url_for('announcements') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Καθαρισμός
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements List -->
+    <div class="row">
+        {% if announcements.items %}
+            {% for announcement in announcements.items %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 announcement-card">
+                    <div class="card-header d-flex justify-content-between align-items-center" 
+                         style="background: {% if announcement.priority == 'urgent' %}linear-gradient(135deg, #dc3545 0%, #c82333 100%)
+                                         {% elif announcement.priority == 'high' %}linear-gradient(135deg, #fd7e14 0%, #e55a00 100%)
+                                         {% elif announcement.priority == 'normal' %}linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)
+                                         {% else %}linear-gradient(135deg, #6c757d 0%, #5a6268 100%){% endif %}; color: white;">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bullhorn me-2"></i>{{ announcement.title }}
+                        </h5>
+                        <span class="badge bg-light text-dark">
+                            {% if announcement.priority == 'urgent' %}🚨 Επείγουσα
+                            {% elif announcement.priority == 'high' %}⚠️ Υψηλή
+                            {% elif announcement.priority == 'normal' %}ℹ️ Κανονική
+                            {% else %}📌 Χαμηλή{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="badge bg-primary me-2">
+                                {% if announcement.category == 'general' %}📢 Γενική ανακοίνωση
+                                {% elif announcement.category == 'event' %}🎭 Εκδήλωση
+                                {% elif announcement.category == 'important' %}⭐ Σημαντική ανακοίνωση
+                                {% elif announcement.category == 'news' %}📰 Νέα
+                                {% else %}{{ announcement.category }}{% endif %}
+                            </span>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>{{ announcement.created_at.strftime('%d/%m/%Y %H:%M') }}
+                            </small>
+                        </div>
+                        
+                        <p class="card-text">{{ announcement.content[:200] }}{% if announcement.content|length > 200 %}...{% endif %}</p>
+                        
+                        {% if announcement.content|length > 200 %}
+                        <button class="btn btn-outline-primary btn-sm" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#announcement-{{ announcement.id }}">
+                            <i class="fas fa-eye me-1"></i>Δείτε περισσότερα
+                        </button>
+                        <div class="collapse mt-2" id="announcement-{{ announcement.id }}">
+                            <div class="card card-body bg-light">
+                                {{ announcement.content }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>
+                            <i class="fas fa-envelope me-1"></i>
+                            {% if announcement.sent_to_newsletter %}
+                                ✅ Αποστάλθηκε στο newsletter
+                            {% else %}
+                                ⏳ Θα αποσταλεί στο newsletter
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card text-center">
+                    <div class="card-body py-5">
+                        <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                        <h5 class="card-title">Δεν βρέθηκαν ανακοινώσεις</h5>
+                        <p class="card-text text-muted">
+                            Δεν υπάρχουν ανακοινώσεις για τα επιλεγμένα φίλτρα.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if announcements.pages > 1 %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Announcements pagination">
+                <ul class="pagination justify-content-center">
+                    {% if announcements.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('announcements', page=announcements.prev_num, category=current_category, priority=current_priority) }}">
+                            <i class="fas fa-chevron-left"></i> Προηγούμενη
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in announcements.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != announcements.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('announcements', page=page_num, category=current_category, priority=current_priority) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if announcements.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('announcements', page=announcements.next_num, category=current_category, priority=current_priority) }}">
+                            Επόμενη <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.announcement-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.announcement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.announcement-card .card-header {
+    border-bottom: none;
+}
+
+.announcement-card .badge {
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .announcement-card .card-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .announcement-card .badge {
+        margin-top: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

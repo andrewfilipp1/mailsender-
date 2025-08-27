@@ -73,6 +73,7 @@ class NewsletterSubscriber(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     subscribed_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
+    welcome_email_sent = db.Column(db.Boolean, default=False)  # Track if welcome email was sent
 
 class ContactMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -82,6 +83,17 @@ class ContactMessage(db.Model):
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    notification_sent = db.Column(db.Boolean, default=False)  # Track if notification email was sent
+
+class Announcement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(100), nullable=False)  # 'general', 'event', 'important', 'news'
+    priority = db.Column(db.String(20), default='normal')  # 'low', 'normal', 'high', 'urgent'
+    is_published = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    sent_to_newsletter = db.Column(db.Boolean, default=False)  # Track if sent to newsletter
 
 # Forms
 class LoginForm(FlaskForm):
@@ -108,6 +120,13 @@ class MomentForm(FlaskForm):
     category = StringField('Category', validators=[DataRequired()])
     media = FileField('Media', validators=[FileAllowed(['jpg', 'png', 'gif', 'jpeg', 'mp4', 'avi', 'mov'])])
     submit = SubmitField('Create Moment')
+
+class AnnouncementForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    category = StringField('Category', validators=[DataRequired()])
+    priority = StringField('Priority', validators=[DataRequired()])
+    submit = SubmitField('Create Announcement')
 
 # Admin Views
 class ArticleAdmin(ModelView):
@@ -180,11 +199,66 @@ admin.add_view(ArticleAdmin(Article, db.session))
 admin.add_view(NewsAdmin(News, db.session))
 admin.add_view(MomentAdmin(Moment, db.session))
 
+# Announcement Admin
+class AnnouncementAdmin(ModelView):
+    column_list = ['id', 'title', 'category', 'priority', 'is_published', 'created_at', 'sent_to_newsletter']
+    column_searchable_list = ['title', 'content', 'category']
+    column_filters = ['category', 'priority', 'is_published', 'sent_to_newsletter', 'created_at']
+    form_choices = {
+        'category': [
+            ('general', 'Γενική ανακοίνωση'),
+            ('event', 'Εκδήλωση'),
+            ('important', 'Σημαντική ανακοίνωση'),
+            ('news', 'Νέα')
+        ],
+        'priority': [
+            ('low', 'Χαμηλή'),
+            ('normal', 'Κανονική'),
+            ('high', 'Υψηλή'),
+            ('urgent', 'Επείγουσα')
+        ]
+    }
+    
+    def on_model_change(self, form, model, is_created):
+        if is_created and model.is_published:
+            # Send to newsletter subscribers when new announcement is created
+            send_announcement_to_newsletter(model)
+
+# Admin Actions
+class AdminActions(ModelView):
+    def is_visible(self):
+        return False  # Hide this view, it's just for actions
+    
+    def get_url(self, endpoint, **kwargs):
+        return '#'
+    
+    def index_view(self):
+        return self.render('admin/actions.html')
+
+# Add custom admin actions
+admin.add_view(AnnouncementAdmin(Announcement, db.session, name='Announcements'))
+
+# Add admin action for sending contact notifications
+@app.route('/admin/send_contact_notifications')
+@login_required
+def admin_send_contact_notifications():
+    """Admin action to send contact notifications"""
+    if not current_user.is_admin:
+        abort(403)
+    
+    try:
+        send_contact_notifications()
+        flash('Contact notifications sent successfully!', 'success')
+    except Exception as e:
+        flash(f'Error sending contact notifications: {e}', 'error')
+    
+    return redirect(url_for('admin.index'))
+
 # Newsletter Subscribers Admin
 class NewsletterSubscriberAdmin(ModelView):
-    column_list = ['id', 'email', 'subscribed_at', 'is_active']
+    column_list = ['id', 'email', 'subscribed_at', 'is_active', 'welcome_email_sent']
     column_searchable_list = ['email']
-    column_filters = ['is_active', 'subscribed_at']
+    column_filters = ['is_active', 'welcome_email_sent', 'subscribed_at']
     can_create = False  # Users can only subscribe through the form
     can_delete = True
     can_edit = True
@@ -193,9 +267,9 @@ admin.add_view(NewsletterSubscriberAdmin(NewsletterSubscriber, db.session, name=
 
 # Contact Messages Admin
 class ContactMessageAdmin(ModelView):
-    column_list = ['id', 'first_name', 'last_name', 'email', 'subject', 'created_at']
+    column_list = ['id', 'first_name', 'last_name', 'email', 'subject', 'created_at', 'notification_sent']
     column_searchable_list = ['email', 'first_name', 'last_name', 'subject']
-    column_filters = ['created_at']
+    column_filters = ['notification_sent', 'created_at']
     can_create = False  # Users can only send through the form
     can_delete = True
     can_edit = True
@@ -263,6 +337,36 @@ def news():
     news_items = News.query.order_by(News.created_at.desc()).paginate(
         page=page, per_page=6, error_out=False)
     return render_template('news.html', news_items=news_items)
+
+@app.route('/announcements')
+def announcements():
+    page = request.args.get('page', 1, type=int)
+    category_filter = request.args.get('category', '')
+    priority_filter = request.args.get('priority', '')
+    
+    query = Announcement.query.filter_by(is_published=True)
+    
+    if category_filter:
+        query = query.filter_by(category=category_filter)
+    if priority_filter:
+        query = query.filter_by(priority=priority_filter)
+    
+    announcements_list = query.order_by(Announcement.created_at.desc()).paginate(
+        page=page, per_page=10, error_out=False)
+    
+    # Get unique categories and priorities for filters
+    categories = db.session.query(Announcement.category).distinct().all()
+    categories = [cat[0] for cat in categories]
+    
+    priorities = db.session.query(Announcement.priority).distinct().all()
+    priorities = [pri[0] for pri in priorities]
+    
+    return render_template('announcements.html', 
+                         announcements=announcements_list,
+                         categories=categories,
+                         priorities=priorities,
+                         current_category=category_filter,
+                         current_priority=priority_filter)
 
 @app.route('/news/<int:news_id>')
 def news_detail(news_id):
@@ -363,7 +467,8 @@ def save_contact_message(first_name, last_name, email, subject, message):
             last_name=last_name,
             email=email,
             subject=subject,
-            message=message
+            message=message,
+            notification_sent=False
         )
         db.session.add(contact_msg)
         db.session.commit()
@@ -389,7 +494,8 @@ def save_newsletter_subscriber(email):
                 print(f"Email {email} reactivated")
                 return True, "Email reactivated"
         
-        subscriber = NewsletterSubscriber(email=email)
+        # Create new subscriber
+        subscriber = NewsletterSubscriber(email=email, welcome_email_sent=False)
         db.session.add(subscriber)
         db.session.commit()
         print(f"Newsletter subscriber saved successfully: {email}")
@@ -399,14 +505,130 @@ def save_newsletter_subscriber(email):
         db.session.rollback()
         return False, f"Error: {e}"
 
+def send_announcement_to_newsletter(announcement):
+    """Send announcement to all newsletter subscribers"""
+    try:
+        subscribers = NewsletterSubscriber.query.filter_by(is_active=True).all()
+        
+        for subscriber in subscribers:
+            # Send announcement email
+            subject = f"Ανακοίνωση: {announcement.title}"
+            
+            body = f"""
+🌟 Νέα Ανακοίνωση από τη Βλασία! 🌟
+
+{announcement.title}
+
+{announcement.content}
+
+---
+Κατηγορία: {announcement.category}
+Προτεραιότητα: {announcement.priority}
+Ημερομηνία: {announcement.created_at.strftime('%d/%m/%Y %H:%M')}
+
+Με εκτίμηση και φιλία,
+Η ομάδα της Βλασίας
+🌿 vlasia.gr 🌿
+"""
+            
+            # Send email using Gmail SMTP
+            send_email_via_gmail(subscriber.email, subject, body)
+            time.sleep(1)  # Small delay between emails
+        
+        # Mark announcement as sent
+        announcement.sent_to_newsletter = True
+        db.session.commit()
+        
+        print(f"Announcement '{announcement.title}' sent to {len(subscribers)} subscribers")
+        return True
+        
+    except Exception as e:
+        print(f"Error sending announcement to newsletter: {e}")
+        return False
+
+def send_contact_notifications():
+    """Send contact form notifications to admin (only for unsent ones)"""
+    try:
+        # Get contact messages that haven't sent notifications yet
+        unsent_contacts = ContactMessage.query.filter_by(notification_sent=False).all()
+        
+        if not unsent_contacts:
+            print("No new contact messages to notify about")
+            return True
+        
+        for contact in unsent_contacts:
+            # Send notification email to admin
+            subject = f"Νέο μήνυμα επικοινωνίας: {contact.subject}"
+            
+            body = f"""
+Νέα επικοινωνία από το site:
+
+Όνομα: {contact.first_name} {contact.last_name}
+Email: {contact.email}
+Θέμα: {contact.subject}
+
+Μήνυμα:
+{contact.message}
+
+---
+Αποστάλθηκε: {contact.created_at.strftime('%d/%m/%Y %H:%M')}
+"""
+            
+            # Send email using Gmail SMTP
+            if send_email_via_gmail("vlasia.blog@gmail.com", subject, body):
+                # Mark as sent
+                contact.notification_sent = True
+                db.session.commit()
+                print(f"Contact notification sent for message {contact.id}")
+            else:
+                print(f"Failed to send contact notification for message {contact.id}")
+            
+            time.sleep(1)  # Small delay between emails
+        
+        return True
+        
+    except Exception as e:
+        print(f"Error sending contact notifications: {e}")
+        return False
+
+def send_email_via_gmail(to_email, subject, body):
+    """Send email using Gmail SMTP"""
+    try:
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        msg = MIMEMultipart()
+        msg['From'] = "vlasia.blog@gmail.com"
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Connect to Gmail SMTP
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login("vlasia.blog@gmail.com", "nxwh upvi kges tfqd")
+        
+        # Send email
+        text = msg.as_string()
+        server.sendmail("vlasia.blog@gmail.com", to_email, text)
+        server.quit()
+        
+        print(f"✅ Announcement email sent successfully to {to_email}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error sending announcement email to {to_email}: {e}")
+        return False
+
 # API Endpoints for Email Sender
 @app.route('/api/pending_contacts')
 def api_pending_contacts():
-    """Get pending contact messages for email sending"""
+    """Get pending contact messages for email sending (only unsent notifications)"""
     try:
-        # Get contact messages that haven't been processed yet
-        # For now, return all recent ones (you can add a 'processed' field later)
-        contacts = ContactMessage.query.order_by(ContactMessage.created_at.desc()).limit(50).all()
+        # Get contact messages that haven't sent notifications yet
+        contacts = ContactMessage.query.filter_by(notification_sent=False).order_by(ContactMessage.created_at.desc()).limit(50).all()
         
         result = []
         for contact in contacts:
@@ -417,7 +639,8 @@ def api_pending_contacts():
                 'email': contact.email,
                 'subject': contact.subject,
                 'message': contact.message,
-                'created_at': contact.created_at.isoformat() if contact.created_at else None
+                'created_at': contact.created_at.isoformat() if contact.created_at else None,
+                'notification_sent': contact.notification_sent
             })
         
         return {'success': True, 'contacts': result}
@@ -426,17 +649,21 @@ def api_pending_contacts():
 
 @app.route('/api/pending_newsletters')
 def api_pending_newsletters():
-    """Get pending newsletter subscribers for welcome emails"""
+    """Get pending newsletter subscribers for welcome emails (only those who haven't received welcome email)"""
     try:
-        # Get recent newsletter subscribers
-        subscribers = NewsletterSubscriber.query.filter_by(is_active=True).order_by(NewsletterSubscriber.subscribed_at.desc()).limit(100).all()
+        # Get newsletter subscribers who haven't received welcome email
+        subscribers = NewsletterSubscriber.query.filter_by(
+            is_active=True, 
+            welcome_email_sent=False
+        ).order_by(NewsletterSubscriber.subscribed_at.desc()).all()
         
         result = []
         for subscriber in subscribers:
             result.append({
                 'id': subscriber.id,
                 'email': subscriber.email,
-                'subscribed_at': subscriber.subscribed_at.isoformat() if subscriber.subscribed_at else None
+                'subscribed_at': subscriber.subscribed_at.isoformat() if subscriber.subscribed_at else None,
+                'welcome_email_sent': subscriber.welcome_email_sent
             })
         
         return {'success': True, 'subscribers': result}
@@ -458,8 +685,20 @@ def api_mark_newsletter_sent(subscriber_id):
     """Mark newsletter welcome as sent"""
     try:
         subscriber = NewsletterSubscriber.query.get_or_404(subscriber_id)
-        # You can add a 'welcome_sent' field here if needed
+        subscriber.welcome_email_sent = True
+        db.session.commit()
         return {'success': True, 'message': f'Newsletter {subscriber_id} marked as sent'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
+@app.route('/api/mark_contact_notification_sent/<int:contact_id>', methods=['POST'])
+def api_mark_contact_notification_sent(contact_id):
+    """Mark contact notification as sent"""
+    try:
+        contact = ContactMessage.query.get_or_404(contact_id)
+        contact.notification_sent = True
+        db.session.commit()
+        return {'success': True, 'message': f'Contact {contact_id} notification marked as sent'}
     except Exception as e:
         return {'success': False, 'error': str(e)}, 500
 
