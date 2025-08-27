@@ -759,6 +759,25 @@ def api_mark_announcement_sent(announcement_id):
     except Exception as e:
         return {'success': False, 'error': str(e)}, 500
 
+@app.route('/api/reset_announcements', methods=['POST'])
+def api_reset_announcements():
+    """Reset all announcements as unsent (for testing)"""
+    try:
+        # Reset all announcements as unsent
+        announcements = Announcement.query.all()
+        for announcement in announcements:
+            announcement.sent_to_newsletter = False
+        
+        db.session.commit()
+        
+        return {
+            'success': True, 
+            'message': f'Reset {len(announcements)} announcements as unsent',
+            'count': len(announcements)
+        }
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
