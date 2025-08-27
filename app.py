@@ -385,7 +385,7 @@ def send_contact_email(first_name, last_name, email, subject, message):
         msg = Message(
             subject=f"Νέο μήνυμα επικοινωνίας: {subject}",
             sender=app.config['MAIL_DEFAULT_SENDER'],
-            recipients=['admin@vlasia.gr'],
+            recipients=['vlasia.blog@gmail.com'],
             body=f"""
             Νέα επικοινωνία από το site:
             
@@ -415,16 +415,26 @@ def send_welcome_email(email):
             return False
             
         msg = Message(
-            subject="Καλώς ήρθατε στο Newsletter της Βλασίας!",
+            subject="Καλώς ήρθατε στο Newsletter της Βλασίας! 🎉",
             sender=app.config['MAIL_DEFAULT_SENDER'],
             recipients=[email],
-            body="""
-            Καλώς ήρθατε στο newsletter της Βλασίας!
+            body=f"""
+            🌟 Καλώς ήρθατε στο Newsletter της Βλασίας! 🌟
             
-            Θα λαμβάνετε ενημερώσεις για τα τελευταία νέα και άρθρα του χωριού.
+            Ευχαριστούμε που εγγραφήκατε στο newsletter μας! 
+            Θα είστε από τους πρώτους που θα ενημερώνονται για:
             
-            Με εκτίμηση,
+            📰 Τα τελευταία νέα του χωριού
+            📝 Νέες δημοσιεύσεις και άρθρα
+            🎭 Εκδηλώσεις και δραστηριότητες
+            🏞️ Τοπία και στιγμές από τη Βλασία
+            👥 Ενημερώσεις για την κοινότητα
+            
+            Θα λαμβάνετε τα newsletters μας κάθε φορά που έχουμε κάτι σημαντικό να μοιραστούμε μαζί σας.
+            
+            Με εκτίμηση και φιλία,
             Η ομάδα της Βλασίας
+            🌿 vlasia.gr 🌿
             """
         )
         
