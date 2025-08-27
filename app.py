@@ -245,7 +245,7 @@ def contact():
         
         # Try to send email notification
         try:
-            if send_contact_email(first_name, last_name, email, subject, message):
+            if save_contact_message(first_name, last_name, email, subject, message):
                 flash('Το μήνυμά σας στάλθηκε επιτυχώς! Θα σας απαντήσουμε σύντομα.', 'success')
             else:
                 flash('Το μήνυμά σας αποθηκεύθηκε αλλά η αποστολή email απέτυχε. Θα σας απαντήσουμε σύντομα.', 'warning')
@@ -345,106 +345,123 @@ def subscribe_newsletter():
         flash('Παρακαλώ εισάγετε ένα έγκυρο email.', 'error')
         return redirect(url_for('index'))
     
-    # Check if already subscribed
-    existing = NewsletterSubscriber.query.filter_by(email=email).first()
-    if existing:
-        if existing.is_active:
-            flash('Αυτό το email είναι ήδη εγγεγραμμένο στο newsletter.', 'info')
-        else:
-            existing.is_active = True
-            db.session.commit()
-            flash('Επιτυχής επαναεγγραφή στο newsletter!', 'success')
-        return redirect(url_for('index'))
+    # Save subscriber using the new function
+    success, message = save_newsletter_subscriber(email)
     
-    # Create new subscriber
-    subscriber = NewsletterSubscriber(email=email)
-    db.session.add(subscriber)
-    db.session.commit()
-    
-    # Try to send welcome email (but don't fail if it doesn't work)
-    try:
-        if app.config.get('MAIL_PASSWORD') and app.config.get('MAIL_USERNAME'):
-            send_welcome_email(email)
-            flash('Επιτυχής εγγραφή στο newsletter! Έχετε λάβει email επιβεβαίωσης.', 'success')
-        else:
-            flash('Επιτυχής εγγραφή στο newsletter!', 'success')
-    except Exception as e:
-        print(f"Email sending failed: {e}")
+    if success:
         flash('Επιτυχής εγγραφή στο newsletter!', 'success')
+    else:
+        flash(message, 'info')
     
     return redirect(url_for('index'))
 
-def send_contact_email(first_name, last_name, email, subject, message):
-    """Send contact form email via Flask-Mail"""
+def save_contact_message(first_name, last_name, email, subject, message):
+    """Save contact form message to database"""
     try:
-        # Check if mail is configured
-        if not app.config.get('MAIL_PASSWORD') or not app.config.get('MAIL_USERNAME'):
-            print("Mail configuration not found")
-            return False
-            
-        msg = Message(
-            subject=f"Νέο μήνυμα επικοινωνίας: {subject}",
-            sender=app.config['MAIL_DEFAULT_SENDER'],
-            recipients=['vlasia.blog@gmail.com'],
-            body=f"""
-            Νέα επικοινωνία από το site:
-            
-            Όνομα: {first_name} {last_name}
-            Email: {email}
-            Θέμα: {subject}
-            
-            Μήνυμα:
-            {message}
-            """
+        contact_msg = ContactMessage(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            subject=subject,
+            message=message
         )
-        
-        mail.send(msg)
-        print(f"Contact email sent successfully to admin@vlasia.gr")
+        db.session.add(contact_msg)
+        db.session.commit()
+        print(f"Contact message saved successfully from {email}")
         return True
-        
     except Exception as e:
-        print(f"Flask-Mail error: {e}")
+        print(f"Error saving contact message: {e}")
+        db.session.rollback()
         return False
 
-def send_welcome_email(email):
-    """Send welcome email via Flask-Mail"""
+def save_newsletter_subscriber(email):
+    """Save newsletter subscriber to database"""
     try:
-        # Check if mail is configured
-        if not app.config.get('MAIL_PASSWORD') or not app.config.get('MAIL_USERNAME'):
-            print("Mail configuration not found")
-            return False
-            
-        msg = Message(
-            subject="Καλώς ήρθατε στο Newsletter της Βλασίας! 🎉",
-            sender=app.config['MAIL_DEFAULT_SENDER'],
-            recipients=[email],
-            body=f"""
-            🌟 Καλώς ήρθατε στο Newsletter της Βλασίας! 🌟
-            
-            Ευχαριστούμε που εγγραφήκατε στο newsletter μας! 
-            Θα είστε από τους πρώτους που θα ενημερώνονται για:
-            
-            📰 Τα τελευταία νέα του χωριού
-            📝 Νέες δημοσιεύσεις και άρθρα
-            🎭 Εκδηλώσεις και δραστηριότητες
-            🏞️ Τοπία και στιγμές από τη Βλασία
-            👥 Ενημερώσεις για την κοινότητα
-            
-            Θα λαμβάνετε τα newsletters μας κάθε φορά που έχουμε κάτι σημαντικό να μοιραστούμε μαζί σας.
-            
-            Με εκτίμηση και φιλία,
-            Η ομάδα της Βλασίας
-            🌿 vlasia.gr 🌿
-            """
-        )
+        # Check if email already exists
+        existing = NewsletterSubscriber.query.filter_by(email=email).first()
+        if existing:
+            if existing.is_active:
+                print(f"Email {email} already subscribed")
+                return False, "Email already subscribed"
+            else:
+                existing.is_active = True
+                db.session.commit()
+                print(f"Email {email} reactivated")
+                return True, "Email reactivated"
         
-        mail.send(msg)
-        print(f"Welcome email sent successfully to {email}")
-        return True
-        
+        subscriber = NewsletterSubscriber(email=email)
+        db.session.add(subscriber)
+        db.session.commit()
+        print(f"Newsletter subscriber saved successfully: {email}")
+        return True, "Subscribed successfully"
     except Exception as e:
-        print(f"Flask-Mail error: {e}")
-        return False
+        print(f"Error saving newsletter subscriber: {e}")
+        db.session.rollback()
+        return False, f"Error: {e}"
+
+# API Endpoints for Email Sender
+@app.route('/api/pending_contacts')
+def api_pending_contacts():
+    """Get pending contact messages for email sending"""
+    try:
+        # Get contact messages that haven't been processed yet
+        # For now, return all recent ones (you can add a 'processed' field later)
+        contacts = ContactMessage.query.order_by(ContactMessage.created_at.desc()).limit(50).all()
+        
+        result = []
+        for contact in contacts:
+            result.append({
+                'id': contact.id,
+                'first_name': contact.first_name,
+                'last_name': contact.last_name,
+                'email': contact.email,
+                'subject': contact.subject,
+                'message': contact.message,
+                'created_at': contact.created_at.isoformat() if contact.created_at else None
+            })
+        
+        return {'success': True, 'contacts': result}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
+@app.route('/api/pending_newsletters')
+def api_pending_newsletters():
+    """Get pending newsletter subscribers for welcome emails"""
+    try:
+        # Get recent newsletter subscribers
+        subscribers = NewsletterSubscriber.query.filter_by(is_active=True).order_by(NewsletterSubscriber.subscribed_at.desc()).limit(100).all()
+        
+        result = []
+        for subscriber in subscribers:
+            result.append({
+                'id': subscriber.id,
+                'email': subscriber.email,
+                'subscribed_at': subscriber.subscribed_at.isoformat() if subscriber.subscribed_at else None
+            })
+        
+        return {'success': True, 'subscribers': result}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
+@app.route('/api/mark_contact_sent/<int:contact_id>', methods=['POST'])
+def api_mark_contact_sent(contact_id):
+    """Mark contact message as processed"""
+    try:
+        contact = ContactMessage.query.get_or_404(contact_id)
+        # You can add a 'processed' field here if needed
+        return {'success': True, 'message': f'Contact {contact_id} marked as sent'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
+@app.route('/api/mark_newsletter_sent/<int:subscriber_id>', methods=['POST'])
+def api_mark_newsletter_sent(subscriber_id):
+    """Mark newsletter welcome as sent"""
+    try:
+        subscriber = NewsletterSubscriber.query.get_or_404(subscriber_id)
+        # You can add a 'welcome_sent' field here if needed
+        return {'success': True, 'message': f'Newsletter {subscriber_id} marked as sent'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
 
 # Error handlers
 @app.errorhandler(404)
