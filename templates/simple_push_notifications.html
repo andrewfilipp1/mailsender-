@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔔 Push Notifications - Βλασία</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .notification-section {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-primary { background: linear-gradient(45deg, #2196F3, #1976D2); }
+        .btn-success { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .btn-warning { background: linear-gradient(45deg, #FF9800, #F57C00); }
+        .btn-danger { background: linear-gradient(45deg, #f44336, #d32f2f); }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .status.success { background: rgba(76, 175, 80, 0.3); border: 1px solid #4CAF50; }
+        .status.error { background: rgba(244, 67, 54, 0.3); border: 1px solid #f44336; }
+        .status.info { background: rgba(33, 150, 243, 0.3); border: 1px solid #2196F3; }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+        }
+        
+        .info-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+        
+        .debug-info {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Push Notifications</h1>
+        
+        <div class="notification-section">
+            <h2>📱 Εγγραφή σε Ειδοποιήσεις</h2>
+            <p>Λάβετε άμεσες ειδοποιήσεις όταν ανεβαίνουν νέες ανακοινώσεις στο site!</p>
+            
+            <div id="subscription-status" class="status info">
+                🔍 Ελέγχοντας κατάσταση εγγραφής...
+            </div>
+            
+            <div class="form-group">
+                <label for="user-name">Όνομα (προαιρετικό):</label>
+                <input type="text" id="user-name" placeholder="Το όνομά σας">
+            </div>
+            
+            <div class="form-group">
+                <label for="user-email">Email (προαιρετικό):</label>
+                <input type="email" id="user-email" placeholder="Το email σας">
+            </div>
+            
+            <button id="push-subscribe-btn" class="btn btn-primary">
+                🔔 Εγγραφή σε Ειδοποιήσεις
+            </button>
+            
+            <button id="push-unsubscribe-btn" class="btn btn-danger" style="display: none;">
+                🚫 Ακύρωση Εγγραφής
+            </button>
+        </div>
+        
+        <div class="info-box">
+            <h3>ℹ️ Πώς Λειτουργεί</h3>
+            <p>1. Πατήστε το κουμπί "Εγγραφή"</p>
+            <p>2. Επιτρέψτε τις ειδοποιήσεις στον browser</p>
+            <p>3. Λάβετε ειδοποιήσεις για νέες ανακοινώσεις!</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>❓ Συχνές Ερωτήσεις</h3>
+            <p><strong>Θα λειτουργήσει στο κινητό;</strong> Ναι, σε όλες τις συσκευές!</p>
+            <p><strong>Θα λειτουργήσει όταν δεν είμαι στο site;</strong> Ναι, ακόμα και όταν το browser είναι κλειστό!</p>
+            <p><strong>Μπορώ να ακυρώσω;</strong> Ναι, οποιαδήποτε στιγμή!</p>
+        </div>
+        
+        <div class="debug-info">
+            <strong>Debug Info:</strong><br>
+            <span id="debug-status">Loading...</span>
+        </div>
+        
+        <a href="/" class="back-link">🏠 Πίσω στην Αρχική</a>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="{{ url_for('static', filename='js/push-notifications-debug.js') }}"></script>
+
+    <!-- Inline Debug Script -->
+    <script>
+    console.log('🚀 Inline Debug: Script loaded!');
+
+    // Simple test function
+    function simpleTest() {
+        console.log('🔔 Inline Debug: Simple test called!');
+        alert('Inline JavaScript is working! Time: ' + new Date().toLocaleTimeString());
+    }
+
+    // Add test button when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Inline Debug: DOM loaded!');
+        
+        // Add a simple test button
+        const testDiv = document.createElement('div');
+        testDiv.innerHTML = `
+            <button onclick="simpleTest()" style="
+                position: fixed; 
+                top: 50px; 
+                right: 10px; 
+                z-index: 9999; 
+                padding: 15px; 
+                background: #2196F3; 
+                color: white; 
+                border: none; 
+                border-radius: 10px; 
+                cursor: pointer; 
+                font-size: 16px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            ">
+                🧪 Test Inline JS
+            </button>
+        `;
+        document.body.appendChild(testDiv);
+        
+        console.log('🚀 Inline Debug: Test button added!');
+        
+        // Test if we can find the subscribe button
+        const subscribeBtn = document.getElementById('push-subscribe-btn');
+        if (subscribeBtn) {
+            console.log('✅ Inline Debug: Found subscribe button:', subscribeBtn);
+            
+            // Add simple click handler
+            subscribeBtn.onclick = function(e) {
+                e.preventDefault();
+                console.log('🔔 Inline Debug: Subscribe button clicked!');
+                alert('Subscribe button clicked! This means the button is working.');
+            };
+            
+            // Change button appearance
+            subscribeBtn.style.backgroundColor = '#4CAF50';
+            subscribeBtn.style.color = 'white';
+            subscribeBtn.style.padding = '15px 30px';
+            subscribeBtn.style.fontSize = '18px';
+            subscribeBtn.textContent = '🔔 Εγγραφή (Inline Test)';
+            
+        } else {
+            console.log('❌ Inline Debug: Subscribe button NOT found!');
+            alert('Subscribe button not found! Check the HTML structure.');
+        }
+        
+        // Update debug status
+        const debugStatus = document.getElementById('debug-status');
+        if (debugStatus) {
+            debugStatus.textContent = '✅ Page loaded successfully at ' + new Date().toLocaleTimeString();
+        }
+    });
+
+    console.log('🚀 Inline Debug: Script setup complete!');
+    </script>
+</body>
+</html>
+

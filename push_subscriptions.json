@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "endpoint": "https://test.endpoint.com",
+    "keys": {
+      "p256dh": "test_p256dh_key",
+      "auth": "test_auth_key"
+    },
+    "email": "test@example.com",
+    "name": "Test User",
+    "subscribed_at": "2025-08-28T17:07:34.281022",
+    "is_active": false,
+    "last_notification": null,
+    "unsubscribed_at": "2025-08-28T17:07:34.470178"
+  }
+]

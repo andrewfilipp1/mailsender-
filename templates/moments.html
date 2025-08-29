@@ -44,7 +44,7 @@
                     {% if moment.is_image %}
                     <!-- Image Display -->
                     <div class="moment-image-container">
-                        <img src="{{ url_for('static', filename='uploads/' + moment.media_file) }}" 
+                        <img src="{{ url_for('static', filename='uploads/' + moment.media_path) }}" 
                              alt="{{ moment.title }}"
                              class="img-fluid moment-image"
                              data-bs-toggle="modal" 
@@ -54,7 +54,7 @@
                     <!-- Video Display -->
                     <div class="moment-video-container">
                         <video controls class="img-fluid moment-video">
-                            <source src="{{ url_for('static', filename='uploads/' + moment.media_file) }}" type="video/mp4">
+                            <source src="{{ url_for('static', filename='uploads/' + moment.media_path) }}" type="video/mp4">
                             Το browser σας δεν υποστηρίζει video.
                         </video>
                     </div>
@@ -82,7 +82,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
-                        <img src="{{ url_for('static', filename='uploads/' + moment.media_file) }}" 
+                        <img src="{{ url_for('static', filename='uploads/' + moment.media_path) }}" 
                              alt="{{ moment.title }}"
                              class="img-fluid modal-image">
                         <p class="mt-3">{{ moment.description }}</p>

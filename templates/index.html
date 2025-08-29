@@ -79,20 +79,16 @@
     </div>
 
     <div class="row">
-        {% for news_item in news_items %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
+        {% for news_item in news %}
+        <div class="col-lg-4 col-md-6 mb-5">
+            <div class="card h-100 shadow-sm" style="margin-bottom: 2rem;">
                 {% if news_item.media_path and news_item.media_type == 'image' %}
                 <img src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" 
                      class="card-img-top" 
-                     style="cursor: pointer;"
+                     style="cursor: pointer; height: 200px; object-fit: cover;"
                      alt="{{ news_item.title }}"
                      onclick="openImageModal('{{ url_for('static', filename='uploads/' + news_item.media_path) }}', '{{ news_item.title }}')"
                      title="Κάντε κλικ για μεγαλύτερη προβολή">
-                {% else %}
-                <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
-                    <i class="fas fa-mountain fa-3x text-muted"></i>
-                </div>
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ news_item.title }}</h5>

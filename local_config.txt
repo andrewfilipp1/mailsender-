@@ -1,0 +1,16 @@
+# Newsletter Mailer Configuration for Local Testing
+# Copy this to .env and update with your actual values
+
+# API Configuration
+NEWSLETTER_API_KEY=your_secret_api_key_here
+
+# SMTP Configuration (Gmail example)
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your_email@gmail.com
+SMTP_PASSWORD=your_app_password_here
+SENDER_EMAIL=your_email@gmail.com
+
+# Flask Configuration
+FLASK_ENV=development
+SECRET_KEY=your_flask_secret_key_here

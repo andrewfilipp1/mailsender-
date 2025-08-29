@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ news_item.title }} - Βλασία{% endblock %}
+{% block title %}{{ news.title }} - Βλασία{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -12,116 +12,46 @@
                     <i class="fas fa-arrow-left me-2"></i>Επιστροφή στα Νέα
                 </a>
             </div>
-            
+
             <!-- News Article Card -->
             <article class="card shadow-lg">
-                <!-- Media Section - SEPARATE from content -->
-                {% if news_item.media_files %}
-                    <div class="media-section">
-                        {% if news_item.media_files|length == 1 %}
-                            <!-- Single media file -->
-                            {% set media = news_item.media_files[0] %}
-                            {% if media.media_type == 'image' %}
-                                <img src="{{ url_for('static', filename='uploads/' + media.file_path) }}" 
-                                     class="img-fluid w-100" 
-                                     alt="{{ news_item.title }}"
-                                     style="max-height: 500px; object-fit: cover; cursor: pointer;"
-                                     onclick="openImageModal('{{ url_for('static', filename='uploads/' + media.file_path) }}', '{{ news_item.title }}')"
-                                     title="Κάντε κλικ για μεγαλύτερη προβολή">
-                            {% elif media.media_type == 'video' %}
-                                <video class="img-fluid w-100" controls style="max-height: 500px;">
-                                    <source src="{{ url_for('static', filename='uploads/' + media.file_path) }}" type="video/mp4">
-                                    Το browser σας δεν υποστηρίζει video tags.
-                                </video>
-                            {% endif %}
-                        {% else %}
-                            <!-- Multiple media files - create a carousel -->
-                            <div id="mediaCarousel" class="carousel slide" data-bs-ride="carousel">
-                                <div class="carousel-indicators">
-                                    {% for media in news_item.media_files %}
-                                    <button type="button" data-bs-target="#mediaCarousel" data-bs-slide-to="{{ loop.index0 }}" 
-                                            {% if loop.first %}class="active" aria-current="true"{% endif %}
-                                            aria-label="Slide {{ loop.index }}">
-                                    </button>
-                                    {% endfor %}
-                                </div>
-                                <div class="carousel-inner">
-                                    {% for media in news_item.media_files %}
-                                    <div class="carousel-item {% if loop.first %}active{% endif %}">
-                                        {% if media.media_type == 'image' %}
-                                            <img src="{{ url_for('static', filename='uploads/' + media.file_path) }}" 
-                                                 class="d-block w-100" 
-                                                 alt="{{ news_item.title }}"
-                                                 style="max-height: 500px; object-fit: cover; cursor: pointer;"
-                                                 onclick="openImageModal('{{ url_for('static', filename='uploads/' + media.file_path) }}', '{{ news_item.title }}')"
-                                                 title="Κάντε κλικ για μεγαλύτερη προβολή">
-                                        {% elif media.media_type == 'video' %}
-                                            <video class="d-block w-100" controls style="max-height: 500px;">
-                                                <source src="{{ url_for('static', filename='uploads/' + media.file_path) }}" type="video/mp4">
-                                                Το browser σας δεν υποστηρίζει video tags.
-                                            </video>
-                                        {% endif %}
-                                        <div class="carousel-caption d-none d-md-block">
-                                            <small class="text-white bg-dark bg-opacity-75 px-2 py-1 rounded">
-                                                {{ loop.index }}/{{ news_item.media_files|length }}
-                                            </small>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#mediaCarousel" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#mediaCarousel" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% elif news_item.media_path %}
-                    <!-- Backward compatibility for old single media -->
-                    <div class="media-section">
-                        {% if news_item.media_type == 'image' %}
-                            <img src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" 
-                                 class="img-fluid w-100" 
-                                 alt="{{ news_item.title }}"
+                <!-- Media Section -->
+                <div class="media-section">
+                    {% if news.media_path and news.media_type %}
+                        {% if news.media_type == "image" %}
+                            <img src="{{ url_for('static', filename='uploads/' + news.media_path) }}"
+                                 class="img-fluid w-100"
+                                 alt="{{ news.title }}"
                                  style="max-height: 500px; object-fit: cover; cursor: pointer;"
-                                 onclick="openImageModal('{{ url_for('static', filename='uploads/' + news_item.media_path) }}', '{{ news_item.title }}')"
+                                 onclick="openImageModal('{{ url_for('static', filename='uploads/' + news.media_path) }}', '{{ news.title }}')"
                                  title="Κάντε κλικ για μεγαλύτερη προβολή">
-                        {% elif news_item.media_type == 'video' %}
+                        {% elif news.media_type == "video" %}
                             <video class="img-fluid w-100" controls style="max-height: 500px;">
-                                <source src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" type="video/mp4">
+                                <source src="{{ url_for('static', filename='uploads/' + news.media_path) }}" type="video/mp4">
                                 Το browser σας δεν υποστηρίζει video tags.
                             </video>
                         {% endif %}
-                    </div>
-                {% endif %}
-                
-                <!-- Content Section - CLEARLY BELOW the image -->
-                <div class="content-section">
-                    <!-- Title -->
-                    <h1 class="card-title h2 mb-3 text-primary">{{ news_item.title }}</h1>
-                    
-                    <!-- Meta Information -->
+                    {% endif %}
+                </div>
+
+                <!-- Content Section -->
+                <div class="content-section p-4">
+                    <h1 class="card-title h2 mb-3 text-primary">{{ news.title }}</h1>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="text-muted">
                             <i class="fas fa-calendar me-2"></i>
-                            {{ news_item.created_at.strftime('%d/%m/%Y %H:%M') }}
+                            {{ news.created_at.strftime('%d/%m/%Y %H:%M') }}
                         </div>
                         <div class="text-muted">
                             <i class="fas fa-user me-2"></i>
                             Διοικητής
                         </div>
                     </div>
-                    
-                    <!-- Content -->
                     <div class="card-text lead" style="line-height: 1.8; color: #333;">
-                        {{ news_item.content|safe }}
+                        {{ news.content|safe }}
                     </div>
                 </div>
-                
+
                 <!-- Footer -->
                 <div class="card-footer bg-light border-top">
                     <div class="d-flex justify-content-between align-items-center">
@@ -141,83 +71,28 @@
     </div>
 </div>
 
-<style>
-.card {
-    border: none;
-    border-radius: 15px;
-    overflow: hidden;
-    margin-bottom: 2rem;
-}
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-/* Media section - separate from content */
-.media-section {
-    background: #f8f9fa;
-    padding: 0;
-    margin: 0;
-    border-bottom: 1px solid #dee2e6;
+{% block extra_js %}
+<script>
+function openImageModal(imageSrc, title) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModalTitle').textContent = title;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
 }
-
-.media-section img,
-.media-section video {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-/* Content section - clearly below media */
-.content-section {
-    background: white;
-    padding: 2rem;
-    margin: 0;
-    border: none;
-}
-
-.card-title {
-    color: var(--primary-color) !important;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-.card-text {
-    font-size: 1.1rem;
-    color: #333 !important;
-    line-height: 1.8;
-    margin-top: 1rem;
-}
-
-.card-footer {
-    background: #f8f9fa !important;
-    border-top: 1px solid #dee2e6;
-    padding: 1rem 2rem;
-}
-
-.btn-outline-primary {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-}
-
-/* Force clear separation */
-.media-section + .content-section {
-    margin-top: 0;
-    padding-top: 2rem;
-    border-top: none;
-}
-
-/* Ensure no overlap */
-.media-section {
-    position: relative;
-    z-index: 1;
-}
-
-.content-section {
-    position: relative;
-    z-index: 2;
-}
-</style>
+</script>
 {% endblock %}

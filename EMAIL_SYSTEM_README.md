@@ -1,134 +1,187 @@
-# 📧 Email System για το Vlasia Blog
+# 📧 Vlasia Blog Email System
 
-## 🎯 **Τι κάνει αυτό το σύστημα;**
+## 🎯 **Σκοπός**
+Το email system του Vlasia Blog διαχειρίζεται την αποστολή emails για:
+- **Welcome emails** σε νέους newsletter subscribers
+- **Announcements** σε όλους τους newsletter subscribers  
+- **Contact notifications** στον admin για νέα μηνύματα επικοινωνίας
 
-Αντί να στέλνει emails απευθείας από τον server (που μπλοκάρει το Digital Ocean), το σύστημα:
+## 🏗️ **Αρχιτεκτονική**
 
-1. **Αποθηκεύει τα δεδομένα στον server** (contact forms, newsletter subscriptions)
-2. **Εμφανίζει τα στοιχεία στο admin panel** για προβολή
-3. **Έχει ένα τοπικό script** που τρέχει με Gmail SMTP για να στέλνει emails
+### **Server Side** (Digital Ocean)
+- **Flask App** με email tracking models
+- **API Endpoints** για email management
+- **Database** με tracking fields (`welcome_email_sent`, `sent_to_newsletter`, `notification_sent`)
 
-## 🚀 **Πώς να το χρησιμοποιήσεις;**
+### **Local Side** (PC)
+- **EMAIL_SENDER_APP** με web UI στο port 5002
+- **Automated email sender** κάθε 5 λεπτά
+- **Gmail SMTP** για αποστολή emails
 
-### **1. Εκκίνηση του Server**
+## 🚀 **Πώς Λειτουργεί**
 
-```bash
-# Στον Digital Ocean server
-cd /var/www/vlasia_blog
-git pull origin main
-systemctl restart vlasia_blog
+1. **Website** → Δημιουργεί pending emails (newsletter subscriptions, announcements)
+2. **Local Email Sender** → Ελέγχει κάθε 5 λεπτά για νέα emails
+3. **Gmail SMTP** → Στέλνει τα emails
+4. **Server API** → Mark emails ως sent (send-once logic)
+
+## 📁 **File Structure**
+
+```
+EMAIL_SENDER_APP/
+├── app.py                 # Main Flask application
+├── data/
+│   ├── config.json       # Configuration settings
+│   └── email_logs.log    # Email sending logs
+├── templates/
+│   ├── dashboard.html    # Main dashboard
+│   ├── logs.html         # Logs viewer
+│   └── settings.html     # Configuration settings
+├── static/               # CSS/JS files
+├── requirements.txt      # Python dependencies
+└── start.sh             # Startup script
 ```
 
-### **2. Εκκίνηση του Τοπικού Email Script**
+## ⚙️ **Configuration**
 
-```bash
-# Τοπικά στον υπολογιστή σου
-cd "Site Βλασια Νεα εκδοση"
-python email_sender.py
+### **Gmail SMTP Settings**
+```json
+{
+  "gmail_user": "vlasia.blog@gmail.com",
+  "gmail_password": "nxwh upvi kges tfqd",
+  "server_url": "http://138.68.21.230",
+  "check_interval": 300
+}
 ```
 
-## 📋 **Τι συμβαίνει όταν κάποιος:**
+### **Server API Endpoints**
+- `GET /api/pending_newsletters` - Newsletter subscribers waiting for welcome emails
+- `GET /api/pending_announcements` - Announcements waiting to be sent
+- `GET /api/pending_contacts` - Contact messages waiting for notifications
+- `POST /api/mark_newsletter_sent/{id}` - Mark welcome email as sent
+- `POST /api/mark_announcement_sent/{id}` - Mark announcement as sent
+- `POST /api/mark_contact_notification_sent/{id}` - Mark contact notification as sent
 
-### **Αποστέλλει Contact Form:**
-1. ✅ Το μήνυμα αποθηκεύεται στη βάση δεδομένων
-2. ✅ Εμφανίζεται στο admin panel (`/admin/contactmessage/`)
-3. 🔄 Το τοπικό script το διαβάζει και στέλνει notification στο `vlasia.blog@gmail.com`
+## 🚀 **Installation & Setup**
 
-### **Εγγράφεται στο Newsletter:**
-1. ✅ Το email αποθηκεύεται στη βάση δεδομένων
-2. ✅ Εμφανίζεται στο admin panel (`/admin/newslettersubscriber/`)
-3. 🔄 Το τοπικό script στέλνει welcome email στο subscriber
-
-## 🔧 **Admin Panel Features**
-
-### **Contact Messages:**
-- Προβολή όλων των μηνυμάτων επικοινωνίας
-- Αναζήτηση με email, όνομα, θέμα
-- Φιλτράρισμα κατά ημερομηνία
-- Διαγραφή μηνυμάτων
-
-### **Newsletter Subscribers:**
-- Προβολή όλων των εγγραφών
-- Αναζήτηση με email
-- Φιλτράρισμα κατά ημερομηνία και status
-- Ενεργοποίηση/απενεργοποίηση subscribers
-
-## 📡 **API Endpoints**
-
-Το σύστημα παρέχει API endpoints για το τοπικό script:
-
-- `GET /api/pending_contacts` - Λήψη pending contact messages
-- `GET /api/pending_newsletters` - Λήψη pending newsletter subscribers
-- `POST /api/mark_contact_sent/<id>` - Σήμανση contact ως αποσταλμένο
-- `POST /api/mark_newsletter_sent/<id>` - Σήμανση newsletter ως αποσταλμένο
-
-## ⚙️ **Ρύθμιση**
-
-### **Gmail SMTP:**
-Το τοπικό script χρησιμοποιεί:
-- **Email:** `vlasia.blog@gmail.com`
-- **Password:** `nxwh upvi kges tfqd` (App Password)
-- **SMTP:** `smtp.gmail.com:587`
-
-### **Server URL:**
-- **Production:** `http://138.68.21.230`
-- **Local:** `http://localhost:5001`
-
-## 🚨 **Προσοχή!**
-
-1. **Μην τρέξεις το email script πολλές φορές** - θα στείλεις διπλά emails
-2. **Ελέγξε τα admin panels** πριν τρέξεις το script
-3. **Το script χρειάζεται internet** για να συνδεθεί στον server
-
-## 🔄 **Workflow**
-
-### **Καθημερινά:**
-1. Είσαι στο admin panel και βλέπεις νέα μηνύματα
-2. Τρέχεις το `python email_sender.py` τοπικά
-3. Το script στέλνει όλα τα pending emails
-4. Ελέγχεις τα logs για επιτυχία/αποτυχία
-
-### **Σε περίπτωση προβλήματος:**
-1. Ελέγχεις τα server logs: `journalctl -u vlasia_blog -f`
-2. Ελέγχεις τα τοπικά logs του email script
-3. Ελέγχεις αν το Gmail SMTP λειτουργεί
-
-## 📊 **Monitoring**
-
-### **Server Logs:**
+### **1. Start the Email Sender App**
 ```bash
-# Στον server
-journalctl -u vlasia_blog -f
+cd EMAIL_SENDER_APP
+chmod +x start.sh
+./start.sh
 ```
 
-### **Email Script Logs:**
-```bash
-# Τοπικά
-python email_sender.py 2>&1 | tee email_log.txt
-```
+### **2. Access the Web UI**
+Ανοιχτό το browser στο: http://localhost:5002
 
-## 🎉 **Πλεονεκτήματα**
+### **3. Configure Settings**
+- Πηγαίνετε στο "Settings" tab
+- Εισάγετε το Gmail App Password
+- Ρυθμίστε το check interval (προτεινόμενο: 300 seconds)
 
-✅ **Αξιόπιστο** - Δεν εξαρτάται από server SMTP  
-✅ **Ελεγχόμενο** - Βλέπεις τι στέλνεται  
-✅ **Ασφαλές** - Gmail SMTP με App Password  
-✅ **Εύκολο** - Ένα script για όλα τα emails  
-✅ **Οικονομικό** - Δωρεάν Gmail SMTP  
+### **4. Start Email Sender**
+- Πατήστε "Εκκίνηση Email Sender"
+- Το system θα αρχίσει να στέλνει emails αυτόματα
 
-## 🆘 **Troubleshooting**
+## 📧 **Email Types**
 
-### **"Connection refused" στον server:**
-- Ελέγξε αν τρέχει το app: `systemctl status vlasia_blog`
-- Επανεκκίνηση: `systemctl restart vlasia_blog`
+### **Welcome Emails**
+- **Trigger**: Νέα newsletter subscription
+- **Recipient**: Newsletter subscriber
+- **Content**: Καλώς ήρθατε μήνυμα με πληροφορίες
+- **Frequency**: Μία φορά ανά subscriber
 
-### **"Authentication failed" στο Gmail:**
-- Ελέγξε το App Password
-- Ενεργοποίησε 2FA στο Gmail
+### **Announcements**
+- **Trigger**: Νέα ανακοίνωση από admin
+- **Recipient**: Όλοι οι active newsletter subscribers
+- **Content**: Τίτλος, περιεχόμενο, κατηγορία, προτεραιότητα
+- **Frequency**: Μία φορά ανά ανακοίνωση
 
-### **"No pending emails":**
-- Ελέγξε τα admin panels για νέα δεδομένα
-- Ελέγξε τα API endpoints: `curl http://138.68.21.230/api/pending_contacts`
+### **Contact Notifications**
+- **Trigger**: Νέα επικοινωνία από contact form
+- **Recipient**: Admin (vlasia.blog@gmail.com)
+- **Content**: Στοιχεία επικοινωνίας και μήνυμα
+- **Frequency**: Μία φορά ανά contact message
+
+## 🔍 **Monitoring & Logs**
+
+### **Dashboard Status**
+- ✅ **Ενεργό/Ανενεργό** - Current status
+- ⏰ **Τελευταία Εκτέλεση** - Last email check
+- 📊 **Συνολικά Emails** - Total emails sent
+- ⚠️ **Τελευταίο Σφάλμα** - Last error (if any)
+
+### **Logs**
+- **Location**: `data/email_logs.log`
+- **Content**: Email sending attempts, successes, errors
+- **View**: Web UI → Logs tab
+
+### **Real-time Updates**
+- Status auto-refreshes κάθε 10 δευτερόλεπτα
+- Current task display
+- Live error reporting
+
+## 🛠️ **Troubleshooting**
+
+### **Common Issues**
+
+#### **1. Gmail Authentication Failed**
+- ✅ Ελέγξτε ότι το App Password είναι σωστό
+- ✅ Βεβαιωθείτε ότι το 2FA είναι ενεργό
+- ✅ Δοκιμάστε το "Test Email" button
+
+#### **2. Server Connection Failed**
+- ✅ Ελέγξτε ότι ο server τρέχει (http://138.68.21.230)
+- ✅ Δοκιμάστε το "Test Server Connection" button
+- ✅ Ελέγξτε το firewall settings
+
+#### **3. No Emails Being Sent**
+- ✅ Ελέγξτε ότι υπάρχουν pending emails στο server
+- ✅ Βεβαιωθείτε ότι το email sender είναι ενεργό
+- ✅ Ελέγξτε τα logs για errors
+
+### **Debug Steps**
+1. **Check Server Status**: `curl http://138.68.21.230/`
+2. **Check Pending Emails**: `curl http://138.68.21.230/api/pending_newsletters`
+3. **View Local Logs**: Web UI → Logs tab
+4. **Test Email Sending**: Web UI → Test Email button
+
+## 🔐 **Security Notes**
+
+- **Gmail App Password** αποθηκεύεται τοπικά στο `config.json`
+- **Server API** είναι public (μόνο για email data)
+- **Email content** δεν περιέχει ευαίσθητες πληροφορίες
+- **Logs** αποθηκεύονται τοπικά
+
+## 📈 **Performance**
+
+### **Check Intervals**
+- **60 seconds** - Γρήγορη ελέγχιση (για testing)
+- **300 seconds** - Κάθε 5 λεπτά (προτεινόμενο)
+- **900 seconds** - Κάθε 15 λεπτά (για production)
+
+### **Email Limits**
+- **Gmail SMTP**: 500 emails/day (free account)
+- **Rate Limiting**: 1 email/second για Gmail
+- **Batch Processing**: Newsletter subscribers processed in batches
+
+## 🎉 **Success Indicators**
+
+- ✅ **Dashboard Status**: "Ενεργό" με green indicator
+- ✅ **Test Email**: Successful delivery
+- ✅ **Server Connection**: "Server connection successful"
+- ✅ **Logs**: Regular "Email sent successfully" messages
+- ✅ **Pending Counts**: Decreasing pending email counts
+
+## 📞 **Support**
+
+Για technical support ή questions:
+- **Email**: vlasia.blog@gmail.com
+- **Logs**: Check the web UI logs tab
+- **Status**: Monitor the dashboard in real-time
 
 ---
 
-**🎯 Το σύστημα είναι έτοιμο! Απλά τρέξε το `python email_sender.py` όταν θέλεις να στείλεις emails.**
+**Created**: 2025-08-27  
+**Version**: 1.0  
+**Status**: ✅ Production Ready

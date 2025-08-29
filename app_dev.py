@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from flask_mail import Mail, Message
 
 # Load environment variables first
-load_dotenv('config.env')
+load_dotenv()
 
 # Flask app configuration
 app = Flask(__name__)
@@ -103,17 +103,6 @@ class ContactMessage(db.Model):
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     notification_sent = db.Column(db.Boolean, default=False)  # Track if notification email was sent
-
-class NewsletterSent(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('newsletter_subscriber.id'), nullable=False)
-    announcement_id = db.Column(db.Integer, db.ForeignKey('announcement.id'), nullable=False)
-    sent_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(50), default='sent')  # 'sent', 'failed', 'pending'
-    
-    # Relationships
-    subscriber = db.relationship('NewsletterSubscriber', backref='sent_emails')
-    announcement = db.relationship('Announcement', backref='sent_emails')
 
 class Announcement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -320,11 +309,24 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Routes
+@app.route('/test')
+def test():
+    return render_template('test.html')
+
+@app.route('/announcements')
+def announcements():
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
+    announcements_pagination = Announcement.query.order_by(Announcement.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False)
+    
+    return render_template('announcements.html', announcements=announcements_pagination)
+
 @app.route('/')
 def index():
-    articles = Article.query.order_by(Article.created_at.desc()).limit(3).all()
     news = News.query.order_by(News.created_at.desc()).limit(3).all()
-    return render_template('index.html', articles=articles, news=news)
+    return render_template('index.html', news=news)
 
 @app.route('/about')
 def about():
@@ -377,35 +379,23 @@ def news():
         page=page, per_page=6, error_out=False)
     return render_template('news.html', news_items=news_items)
 
-@app.route('/announcements')
-def announcements():
-    page = request.args.get('page', 1, type=int)
-    category_filter = request.args.get('category', '')
-    priority_filter = request.args.get('priority', '')
+@app.route('/subscribe_newsletter', methods=['POST'])
+def subscribe_newsletter():
+    email = request.form.get('email')
     
-    query = Announcement.query.filter_by(is_published=True)
+    if not email:
+        flash('Παρακαλώ εισάγετε ένα έγκυρο email.', 'error')
+        return redirect(url_for('index'))
     
-    if category_filter:
-        query = query.filter_by(category=category_filter)
-    if priority_filter:
-        query = query.filter_by(priority=priority_filter)
+    # Save subscriber using the new function
+    success, message = save_newsletter_subscriber(email)
     
-    announcements_list = query.order_by(Announcement.created_at.desc()).paginate(
-        page=page, per_page=10, error_out=False)
+    if success:
+        flash('Επιτυχής εγγραφή στο newsletter!', 'success')
+    else:
+        flash(message, 'info')
     
-    # Get unique categories and priorities for filters
-    categories = db.session.query(Announcement.category).distinct().all()
-    categories = [cat[0] for cat in categories]
-    
-    priorities = db.session.query(Announcement.priority).distinct().all()
-    priorities = [pri[0] for pri in priorities]
-    
-    return render_template('announcements.html', 
-                         announcements=announcements_list,
-                         categories=categories,
-                         priorities=priorities,
-                         current_category=category_filter,
-                         current_priority=priority_filter)
+    return redirect(url_for('index'))
 
 @app.route('/news/<int:news_id>')
 def news_detail(news_id):
@@ -478,24 +468,6 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
-
-@app.route('/subscribe_newsletter', methods=['POST'])
-def subscribe_newsletter():
-    email = request.form.get('email')
-    
-    if not email:
-        flash('Παρακαλώ εισάγετε ένα έγκυρο email.', 'error')
-        return redirect(url_for('index'))
-    
-    # Save subscriber using the new function
-    success, message = save_newsletter_subscriber(email)
-    
-    if success:
-        flash('Επιτυχής εγγραφή στο newsletter!', 'success')
-    else:
-        flash(message, 'info')
-    
     return redirect(url_for('index'))
 
 def save_contact_message(first_name, last_name, email, subject, message):
@@ -853,125 +825,6 @@ def api_new_subscribers():
             'subscribers': []
         }), 500
 
-# Newsletter Mailer API Endpoints
-@app.route('/api/get-newsletter-batch', methods=['GET'])
-def api_get_newsletter_batch():
-    """Get newsletter data for external mailer system"""
-    try:
-        # Check API key
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'Unauthorized'}), 401
-        
-        api_key = auth_header.split(' ')[1]
-        if api_key != os.getenv('NEWSLETTER_API_KEY', 'your_secret_api_key'):
-            return jsonify({'error': 'Invalid API key'}), 401
-        
-        # Find the latest announcement that hasn't been sent to all subscribers
-        latest_announcement = Announcement.query.filter(
-            Announcement.is_published == True,
-            Announcement.sent_to_newsletter == False
-        ).order_by(Announcement.created_at.desc()).first()
-        
-        if not latest_announcement:
-            return jsonify({'message': 'No new announcements to send'}), 200
-        
-        # Get all active subscribers who haven't received this announcement
-        active_subscribers = NewsletterSubscriber.query.filter(
-            NewsletterSubscriber.is_active == True
-        ).all()
-        
-        # Filter out subscribers who already received this announcement
-        recipients = []
-        for subscriber in active_subscribers:
-            already_sent = NewsletterSent.query.filter_by(
-                user_id=subscriber.id,
-                announcement_id=latest_announcement.id
-            ).first()
-            
-            if not already_sent:
-                recipients.append({
-                    'user_id': subscriber.id,
-                    'email': subscriber.email
-                })
-        
-        if not recipients:
-            return jsonify({'message': 'All subscribers have already received this announcement'}), 200
-        
-        # Return newsletter data
-        return jsonify({
-            'announcement_id': latest_announcement.id,
-            'subject': latest_announcement.title,
-            'body_html': f"""
-                <h1>{latest_announcement.title}</h1>
-                <p><strong>Κατηγορία:</strong> {latest_announcement.category}</p>
-                <p><strong>Προτεραιότητα:</strong> {latest_announcement.priority}</p>
-                <hr>
-                <div>{latest_announcement.content}</div>
-                <hr>
-                <p><small>Αποστάλθηκε από το site Βλασια στις {latest_announcement.created_at.strftime('%d/%m/%Y %H:%M')}</small></p>
-            """,
-            'recipients': recipients
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/mark-email-sent', methods=['POST'])
-def api_mark_email_sent():
-    """Mark an email as sent in the database"""
-    try:
-        # Check API key
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'Unauthorized'}), 401
-        
-        api_key = auth_header.split(' ')[1]
-        if api_key != os.getenv('NEWSLETTER_API_KEY', 'your_secret_api_key'):
-            return jsonify({'error': 'Invalid API key'}), 401
-        
-        data = request.get_json()
-        user_id = data.get('user_id')
-        announcement_id = data.get('announcement_id')
-        
-        if not user_id or not announcement_id:
-            return jsonify({'error': 'Missing user_id or announcement_id'}), 400
-        
-        # Check if already marked as sent
-        existing_record = NewsletterSent.query.filter_by(
-            user_id=user_id,
-            announcement_id=announcement_id
-        ).first()
-        
-        if existing_record:
-            return jsonify({'message': 'Email already marked as sent'}), 200
-        
-        # Create new record
-        newsletter_sent = NewsletterSent(
-            user_id=user_id,
-            announcement_id=announcement_id,
-            status='sent'
-        )
-        db.session.add(newsletter_sent)
-        db.session.commit()
-        
-        # Check if all subscribers have received this announcement
-        total_subscribers = NewsletterSubscriber.query.filter_by(is_active=True).count()
-        total_sent = NewsletterSent.query.filter_by(announcement_id=announcement_id).count()
-        
-        if total_sent >= total_subscribers:
-            # Mark announcement as sent to newsletter
-            announcement = Announcement.query.get(announcement_id)
-            if announcement:
-                announcement.sent_to_newsletter = True
-                db.session.commit()
-        
-        return jsonify({'success': True, 'message': 'Email marked as sent'})
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
@@ -985,4 +838,4 @@ def internal_error(error):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5005)

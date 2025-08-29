@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block title %}Ειδοποιήσεις - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 text-primary">
+                    <i class="fas fa-bell me-3"></i>Ειδοποιήσεις
+                </h1>
+                <p class="lead text-muted">
+                    Μείνετε ενημερωμένοι για τα τελευταία νέα και ανακοινώσεις της Βλασίας! 🎉
+                </p>
+            </div>
+
+            <!-- Push Notification Container -->
+            <div class="push-notification-container">
+                <!-- Main Card -->
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <h3 class="mb-0">
+                            <i class="fas fa-mobile-alt me-2"></i>
+                            Εγγραφή στις Ειδοποιήσεις
+                        </h3>
+                    </div>
+                    
+                    <div class="card-body p-5">
+                        <!-- Status Text -->
+                        <div class="text-center mb-4">
+                            <p id="push-status-text" class="text-muted">
+                                📱 Εγγραφείτε για να λαμβάνετε ειδοποιήσεις
+                            </p>
+                        </div>
+
+                        <!-- Subscription Form -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="user-name" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Όνομα (προαιρετικό)
+                                </label>
+                                <input type="text" class="form-control" id="user-name" name="name" 
+                                       placeholder="Το όνομά σας">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="user-email" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>Email (προαιρετικό)
+                                </label>
+                                <input type="email" class="form-control" id="user-email" name="email" 
+                                       placeholder="Το email σας">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="text-center mt-4">
+                            <button id="push-subscribe-btn" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-bell me-2"></i>
+                                Εγγραφή στις Ειδοποιήσεις
+                            </button>
+                            
+                            <button id="push-unsubscribe-btn" class="btn btn-outline-danger btn-lg" style="display: none;">
+                                <i class="fas fa-bell-slash me-2"></i>
+                                Αποσύνδεση
+                            </button>
+                        </div>
+
+                        <!-- Info Section -->
+                        <div class="mt-5">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
+                                        <h5>Άμεσες Ειδοποιήσεις</h5>
+                                        <p class="text-muted small">
+                                            Λαμβάνετε ειδοποιήσεις αμέσως μόλις ανεβαίνει νέα ανακοίνωση
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 text-center mb-3">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-mobile-alt fa-3x text-success mb-3"></i>
+                                        <h5>Δουλεύει Παντού</h5>
+                                        <p class="text-muted small">
+                                            Στο κινητό, tablet και υπολογιστή σας
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 text-center mb-3">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-shield-alt fa-3x text-info mb-3"></i>
+                                        <h5>Ασφαλές</h5>
+                                        <p class="text-muted small">
+                                            Μόνο εσείς λαμβάνετε τις ειδοποιήσεις σας
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- How It Works -->
+                        <div class="mt-5">
+                            <h4 class="text-center mb-4">
+                                <i class="fas fa-question-circle me-2"></i>Πώς Λειτουργεί;
+                            </h4>
+                            
+                            <div class="row">
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="step-number">1</div>
+                                    <h6>Εγγραφή</h6>
+                                    <p class="text-muted small">Πατάτε το κουμπί εγγραφής</p>
+                                </div>
+                                
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="step-number">2</div>
+                                    <h6>Άδεια</h6>
+                                    <p class="text-muted small">Επιτρέπετε τις ειδοποιήσεις</p>
+                                </div>
+                                
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="step-number">3</div>
+                                    <h6>Ειδοποιήσεις</h6>
+                                    <p class="text-muted small">Λαμβάνετε αυτόματα τις ειδοποιήσεις</p>
+                                </div>
+                                
+                                <div class="col-md-3 text-center mb-3">
+                                    <div class="step-number">4</div>
+                                    <h6>Ενημέρωση</h6>
+                                    <p class="text-muted small">Μείνετε ενημερωμένοι για τη Βλασία</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="card mt-4 shadow border-0">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-question-circle me-2"></i>Συχνές Ερωτήσεις
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq1">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                        Τι είναι οι push notifications;
+                                    </button>
+                                </h2>
+                                <div id="collapse1" class="accordion-collapse collapse" 
+                                     data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Οι push notifications είναι μικρά μηνύματα που εμφανίζονται στην οθόνη σας, 
+                                        ακόμα και όταν δεν είστε στο site της Βλασίας. Είναι σαν να έχετε εγκαταστήσει 
+                                        εφαρμογή στο κινητό σας!
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq2">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                        Πότε λαμβάνω ειδοποιήσεις;
+                                    </button>
+                                </h2>
+                                <div id="collapse2" class="accordion-collapse collapse" 
+                                     data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Λαμβάνετε ειδοποιήσεις κάθε φορά που ανεβαίνει νέα ανακοίνωση στο site της Βλασίας. 
+                                        Οι ειδοποιήσεις είναι άμεσες και δεν χρειάζεται να ελέγχετε το site συνεχώς.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq3">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                        Μπορώ να σταματήσω τις ειδοποιήσεις;
+                                    </button>
+                                </h2>
+                                <div id="collapse3" class="accordion-collapse collapse" 
+                                     data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Ναι! Μπορείτε να σταματήσετε τις ειδοποιήσεις οποιαδήποτε στιγμή πατώντας 
+                                        το κουμπί "Αποσύνδεση". Επίσης μπορείτε να τις απενεργοποιήσετε από τις 
+                                        ρυθμίσεις του browser σας.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+.feature-icon {
+    padding: 1rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: translateY(-5px);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+    font-size: 1.2rem;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    border: none;
+}
+
+.btn {
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #e7f1ff;
+    color: #0c63e4;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0,123,255,0.25);
+}
+
+/* Animation for success messages */
+.alert {
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .btn + .btn {
+        margin-left: 0;
+    }
+}
+</style>
+
+<!-- Load JavaScript -->
+<script src="{{ url_for('static', filename='js/push-notifications-debug.js') }}"></script>
+
+<!-- Inline Debug Script -->
+<script>
+console.log('🚀 Inline Debug: Script loaded!');
+
+// Simple test function
+function simpleTest() {
+    console.log('🔔 Inline Debug: Simple test called!');
+    alert('Inline JavaScript is working! Time: ' + new Date().toLocaleTimeString());
+}
+
+// Add test button when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Inline Debug: DOM loaded!');
+    
+    // Add a simple test button
+    const testDiv = document.createElement('div');
+    testDiv.innerHTML = `
+        <button onclick="simpleTest()" style="
+            position: fixed; 
+            top: 50px; 
+            right: 10px; 
+            z-index: 9999; 
+            padding: 15px; 
+            background: #2196F3; 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        ">
+            🧪 Test Inline JS
+        </button>
+    `;
+    document.body.appendChild(testDiv);
+    
+    console.log('🚀 Inline Debug: Test button added!');
+    
+    // Test if we can find the subscribe button
+    const subscribeBtn = document.getElementById('push-subscribe-btn');
+    if (subscribeBtn) {
+        console.log('✅ Inline Debug: Found subscribe button:', subscribeBtn);
+        
+        // Add simple click handler
+        subscribeBtn.onclick = function(e) {
+            e.preventDefault();
+            console.log('🔔 Inline Debug: Subscribe button clicked!');
+            alert('Subscribe button clicked! This means the button is working.');
+        };
+        
+        // Change button appearance
+        subscribeBtn.style.backgroundColor = '#4CAF50';
+        subscribeBtn.style.color = 'white';
+        subscribeBtn.style.padding = '15px 30px';
+        subscribeBtn.style.fontSize = '18px';
+        subscribeBtn.textContent = '🔔 Εγγραφή (Inline Test)';
+        
+    } else {
+        console.log('❌ Inline Debug: Subscribe button NOT found!');
+        alert('Subscribe button not found! Check the HTML structure.');
+    }
+});
+
+console.log('🚀 Inline Debug: Script setup complete!');
+</script>
+{% endblock %}

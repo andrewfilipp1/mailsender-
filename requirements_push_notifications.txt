@@ -1,0 +1,26 @@
+# Push Notification System Dependencies for Vlasia Blog
+# Install with: pip install -r requirements_push_notifications.txt
+
+# Core cryptography for VAPID keys
+cryptography>=3.4.8
+
+# HTTP requests for push notifications
+requests>=2.25.1
+
+# JSON handling
+# (built-in with Python)
+
+# Logging
+# (built-in with Python)
+
+# Base64 encoding
+# (built-in with Python)
+
+# Typing support
+# (built-in with Python 3.5+)
+
+# Datetime handling
+# (built-in with Python)
+
+# OS operations
+# (built-in with Python)

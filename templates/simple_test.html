@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧪 Simple JavaScript Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 15px; margin: 10px; font-size: 16px; }
+        .result { padding: 10px; margin: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple JavaScript Test</h1>
+    
+    <button onclick="testAlert()">Test Alert</button>
+    <button onclick="testConsole()">Test Console</button>
+    <button onclick="testDOM()">Test DOM</button>
+    <button onclick="testFetch()">Test Fetch</button>
+    
+    <div id="results"></div>
+
+    <script>
+        console.log('🚀 JavaScript loaded!');
+        
+        function testAlert() {
+            alert('✅ Alert is working!');
+            logResult('Alert test passed!', 'success');
+        }
+        
+        function testConsole() {
+            console.log('✅ Console is working!');
+            console.warn('⚠️ Warning test');
+            console.error('❌ Error test');
+            logResult('Console test passed!', 'success');
+        }
+        
+        function testDOM() {
+            const results = document.getElementById('results');
+            if (results) {
+                results.innerHTML += '<div class="result success">✅ DOM test passed!</div>';
+            } else {
+                logResult('❌ DOM test failed!', 'error');
+            }
+        }
+        
+        function testFetch() {
+            fetch('/api/push/vapid-key')
+                .then(response => response.json())
+                .then(data => {
+                    logResult('✅ Fetch test passed! VAPID key received.', 'success');
+                })
+                .catch(error => {
+                    logResult('❌ Fetch test failed: ' + error.message, 'error');
+                });
+        }
+        
+        function logResult(message, type) {
+            const results = document.getElementById('results');
+            if (results) {
+                const div = document.createElement('div');
+                div.className = 'result ' + type;
+                div.textContent = message;
+                results.appendChild(div);
+            }
+        }
+        
+        // Auto-test when page loads
+        window.onload = function() {
+            console.log('🚀 Page loaded, running auto-test...');
+            setTimeout(() => {
+                testConsole();
+                testDOM();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
+

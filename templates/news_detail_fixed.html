@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}{{ news_item.title }} - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- News Header -->
+            <div class="news-header mb-4">
+                <h1 class="display-4 text-primary mb-3">{{ news_item.title }}</h1>
+                <div class="news-meta text-muted mb-3">
+                    <i class="fas fa-calendar me-2"></i>
+                    <span>{{ news_item.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+            </div>
+
+            <!-- Media Section -->
+            <div class="media-section mb-4">
+                {% if news_item.media_path and news_item.media_type %}
+                    {% if news_item.media_type == "image" %}
+                        <img src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}"
+                             class="img-fluid w-100"
+                             alt="{{ news_item.title }}"
+                             style="max-height: 500px; object-fit: cover; cursor: pointer;"
+                             onclick="openImageModal('{{ url_for('static', filename='uploads/' + news_item.media_path) }}', '{{ news_item.title }}')"
+                             title="Κάντε κλικ για μεγαλύτερη προβολή">
+                    {% elif news_item.media_type == "video" %}
+                        <video class="img-fluid w-100" controls style="max-height: 500px;">
+                            <source src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" type="video/mp4">
+                            Το browser σας δεν υποστηρίζει video tags.
+                        </video>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- News Content -->
+            <div class="news-content">
+                <div class="content-text">
+                    {{ news_item.content|safe }}
+                </div>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="share-section mt-5">
+                <h5><i class="fas fa-share-alt me-2"></i>Μοιραστείτε αυτή την είδηση</h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" onclick="shareOnFacebook()">
+                        <i class="fab fa-facebook me-2"></i>Facebook
+                    </button>
+                    <button class="btn btn-info" onclick="shareOnTwitter()">
+                        <i class="fab fa-twitter me-2"></i>Twitter
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyLink()">
+                        <i class="fas fa-link me-2"></i>Αντιγραφή Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Back to News -->
+            <div class="sidebar mb-4">
+                <div class="text-center">
+                    <a href="{{ url_for('news') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-arrow-left me-2"></i>Επιστροφή στα νέα
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-home me-2"></i>Αρχική σελίδα
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openImageModal(imageSrc, title) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModalTitle').textContent = title;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('{{ news_item.title }}');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('{{ news_item.title }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        // Show success message
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Αντιγράφηκε!';
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}
+
+{% block title %}{{ news_item.title }} - Βλασία{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- News Header -->
+            <div class="news-header mb-4">
+                <h1 class="display-4 text-primary mb-3">{{ news_item.title }}</h1>
+                <div class="news-meta text-muted mb-3">
+                    <i class="fas fa-calendar me-2"></i>
+                    <span>{{ news_item.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+            </div>
+
+            <!-- Media Section -->
+            <div class="media-section mb-4">
+                {% if news_item.media_path and news_item.media_type %}
+                    {% if news_item.media_type == "image" %}
+                        <img src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}"
+                             class="img-fluid w-100"
+                             alt="{{ news_item.title }}"
+                             style="max-height: 500px; object-fit: cover; cursor: pointer;"
+                             onclick="openImageModal('{{ url_for('static', filename='uploads/' + news_item.media_path) }}', '{{ news_item.title }}')"
+                             title="Κάντε κλικ για μεγαλύτερη προβολή">
+                    {% elif news_item.media_type == "video" %}
+                        <video class="img-fluid w-100" controls style="max-height: 500px;">
+                            <source src="{{ url_for('static', filename='uploads/' + news_item.media_path) }}" type="video/mp4">
+                            Το browser σας δεν υποστηρίζει video tags.
+                        </video>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- News Content -->
+            <div class="news-content">
+                <div class="content-text">
+                    {{ news_item.content|safe }}
+                </div>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="share-section mt-5">
+                <h5><i class="fas fa-share-alt me-2"></i>Μοιραστείτε αυτή την είδηση</h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" onclick="shareOnFacebook()">
+                        <i class="fab fa-facebook me-2"></i>Facebook
+                    </button>
+                    <button class="btn btn-info" onclick="shareOnTwitter()">
+                        <i class="fab fa-twitter me-2"></i>Twitter
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyLink()">
+                        <i class="fas fa-link me-2"></i>Αντιγραφή Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Back to News -->
+            <div class="sidebar mb-4">
+                <div class="text-center">
+                    <a href="{{ url_for('news') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-arrow-left me-2"></i>Επιστροφή στα νέα
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-home me-2"></i>Αρχική σελίδα
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openImageModal(imageSrc, title) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModalTitle').textContent = title;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('{{ news_item.title }}');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('{{ news_item.title }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        // Show success message
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Αντιγράφηκε!';
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}
